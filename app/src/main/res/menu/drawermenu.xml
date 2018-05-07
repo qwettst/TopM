@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/myReview"
+        android:title="Отзывы"
+        />
+
+    <item android:id="@+id/chat"
+        android:title="Чат"
+        />
+
+    <item android:id="@+id/meReview"
+        android:title="Модерация"
+       />
+
+    <item android:id="@+id/lk"
+        android:title="Личный кабинет"
+    />
+
+    <item android:id="@+id/signout"
+        android:title="Выход"
+        />
+    <item android:id="@+id/create_lk"
+        android:title="Создать личный кабинет"
+      />
+
+</menu>

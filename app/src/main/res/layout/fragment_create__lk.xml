@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <ImageView
+        android:id="@+id/background_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <EditText
+        android:hint="Фамилия"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_first_name"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/send_first_name"
+        android:background="@android:color/darker_gray"/>
+    <EditText
+        android:hint="Имя"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_name"
+        android:layout_below="@+id/send_first_name"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/send_first_name"
+        android:background="@android:color/darker_gray"/>
+    <EditText
+        android:hint="Отчество"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_otchestvo"
+        android:layout_below="@+id/send_name"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/send_otchestvo"
+        android:background="@android:color/darker_gray"/>
+
+    <EditText
+        android:hint="Профессия"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_spec"
+        android:layout_below="@+id/send_otchestvo"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/send_name"
+        android:background="@android:color/darker_gray"/>
+    <TextView
+        android:hint="Работа по вызову"
+        android:padding="10dp"
+        android:id="@+id/work_home"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/send_spec"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/send_spec"
+        android:background="@android:color/darker_gray"/>
+    <EditText
+        android:hint="Город"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_gorod"
+        android:layout_below="@+id/work_home"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/work_home"
+        android:background="@android:color/darker_gray"/>
+    <EditText
+        android:hint="Улица, номера дома"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/send_street"
+        android:layout_below="@+id/send_gorod"
+        android:textSize="14sp"
+        android:textStyle="normal" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/send_gorod"
+        android:background="@android:color/darker_gray"/>
+    <EditText
+        android:hint="Обо мне"
+        android:id="@+id/send_infoRev"
+        style="@style/FullWidthEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/send_street"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@+id/send_infoRev"
+        android:layout_alignParentStart="true"
+        android:background="@android:color/darker_gray" />
+    <CheckBox
+        android:id="@+id/onCallYes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/work_home"
+        android:layout_marginStart="43dp"
+        android:layout_toEndOf="@+id/work_home"
+        android:text="Да" />
+
+    <CheckBox
+        android:id="@+id/onCallNo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/send_gorod"
+        android:layout_marginStart="23dp"
+        android:layout_toEndOf="@+id/onCallYes"
+        android:text="Нет" />
+
+</RelativeLayout>
+

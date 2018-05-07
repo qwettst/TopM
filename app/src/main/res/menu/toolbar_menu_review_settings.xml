@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/rev_edit"
+        android:title="Редактировать"
+        />
+
+    <item android:id="@+id/rev_remove"
+        android:title="Удалить"
+        />
+
+    <item android:id="@+id/addFav"
+        android:title="Добавить себе"
+        />
+</menu>

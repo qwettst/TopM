@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/background"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <ImageView
+        android:id="@+id/background_image"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    <Button
+        android:id="@+id/guestSignIn"
+        android:layout_width="202dp"
+        android:layout_height="49dp" android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="149dp"
+        android:background="@drawable/main_gradient"
+        android:text="Гость" android:textColor="@color/white" />
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/signFaceBook"
+        android:layout_width="50dp"
+        android:layout_height="0dp"
+        android:visibility="invisible" />
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="346dp"
+        android:layout_height="161dp"
+        android:layout_below="@+id/signFaceBook"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/logo" />
+    <ImageButton android:id="@+id/signVK"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_alignTop="@+id/signFB"
+        android:layout_centerInParent="true"
+        android:background="@drawable/vk" />
+    <ImageButton android:id="@+id/signFB"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_alignEnd="@+id/guestSignIn"
+        android:layout_alignTop="@+id/signGoogle"
+        android:background="@drawable/facebook" />
+    <ImageButton
+        android:id="@+id/signGoogle"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_above="@+id/guestSignIn"
+        android:layout_alignStart="@+id/guestSignIn"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/gplus" />
+</RelativeLayout>
+

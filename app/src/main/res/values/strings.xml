@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ТОПмастер</string>
+    <string name="serverIDTokenG">493075047380-q5ok7nlh81io2vfp22jprq9gsdrpjkqt.apps.googleusercontent.com</string>
+    <string name="loading">loading..</string>
+    <string name="facebook_app_id">688418164882551</string>
+    <string name="fb_login_protocol_scheme">fb688418164882551</string>
+    <string name="openDrwm">Open</string>
+    <string name="closeDrwm">Close</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="LK_fragment_header">Личный кабинет</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <integer name="com_vk_sdk_AppId">6437852</integer>
+</resources>

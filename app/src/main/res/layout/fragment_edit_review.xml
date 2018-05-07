@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/background_image"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+        <EditText
+            android:id="@+id/send_first_name"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Имя"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/send_last_name"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/darker_gray" />
+        <EditText
+            android:id="@+id/send_last_name"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_first_name"
+            android:hint="Фамилия"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/send_spec"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/darker_gray" />
+        <EditText
+            android:id="@+id/send_spec"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_last_name"
+            android:hint="Профессия"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/send_city"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/darker_gray" />
+        <EditText
+            android:id="@+id/send_city"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_spec"
+            android:hint="Город"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/send_street"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/darker_gray" />
+        <EditText
+            android:id="@+id/send_street"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_city"
+            android:hint="Улица, номера дома"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/send_street"
+            android:background="@android:color/darker_gray" />
+        <EditText
+            android:id="@+id/send_infoRev"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/send_street"
+            android:ems="10"
+            android:hint="Текст Отзыва"
+            android:inputType="textMultiLine"
+            android:text="Читал отзывы про мастера, соответствуют. Приехал в оговоренное время, со своим инструментом, разобрался в проблеме и отремонтировал диван. На диване можно сидеть, на такой результат и расчитывли. Мастер дал гарантию на работу." />
+        <RatingBar
+            android:id="@+id/ratingBar"
+            style="@android:style/Widget.Material.Light.RatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_infoRev"
+            android:layout_marginTop="37dp"
+            android:layout_toEndOf="@+id/textView3"
+            android:backgroundTint="@color/darkgrey"
+            android:numStars="5"
+            android:rating="0"
+            android:scaleX=".5"
+            android:scaleY=".5"
+            android:stepSize="0.5"
+            android:theme="@style/MyRatingBar" />
+        <RatingBar
+            android:id="@+id/ratingBar2"
+            style="@android:style/Widget.Material.Light.RatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/ratingBar"
+            android:layout_below="@+id/ratingBar"
+            android:backgroundTint="@color/darkgrey"
+            android:numStars="5"
+            android:rating="0"
+            android:scaleX=".5"
+            android:scaleY=".5"
+            android:stepSize="0.5"
+            android:theme="@style/MyRatingBar" />
+        <RatingBar
+            android:id="@+id/ratingBar3"
+            style="@android:style/Widget.Material.Light.RatingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/ratingBar"
+            android:layout_below="@+id/ratingBar2"
+            android:numStars="5"
+            android:rating="0"
+            android:scaleX=".5"
+            android:scaleY=".5"
+            android:stepSize="0.5"
+            android:theme="@style/MyRatingBar" />
+        <TextView
+            android:id="@+id/textView1"
+            style="@style/FullWidthEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/ratingBar"
+            android:layout_marginTop="17dp"
+            android:hint="Качество услуг"
+            android:padding="2dp"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <TextView
+            android:id="@+id/textView2"
+            style="@style/FullWidthEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/ratingBar3"
+            android:layout_alignEnd="@+id/textView1"
+            android:layout_marginBottom="16dp"
+            android:hint="Коммуникация"
+            android:padding="2dp"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/FullWidthEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/textView2"
+            android:layout_below="@+id/ratingBar2"
+            android:layout_marginTop="11dp"
+            android:hint="Конфликтность"
+            android:padding="2dp"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+    </RelativeLayout>
+
+</ScrollView>
