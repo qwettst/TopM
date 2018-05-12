@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -95,10 +96,11 @@ public class LK extends Fragment {
         }
     }
 
-    private TextView tvName,tvSpec,tvCity,tvAdress,tvAb;
-    private TaskGetReview tgrTask;
+    private TextView tvName,tvSpec,tvCity,tvAdress,tvAb,
+    tv1,tv2,tv3,tv4,tv5,tv6,tv7,tv8;
+    private RatingBar rbRate;
     private ProgressBar pbTask;
-    private int iUID;
+    private int iUid;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -106,12 +108,12 @@ public class LK extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_lk, container,
                 false);
-
+        getActivity().setTitle("Личный кабинет");
         ImageView ivBackground;
 
         Bundle bundle = this.getArguments();
 
-        iUID= bundle.getInt("uID");
+        iUid= bundle.getInt("uID");
 
         tvName=(TextView)rootView.findViewById(R.id.Uname);
         tvSpec=(TextView)rootView.findViewById(R.id.USpec);
@@ -120,14 +122,24 @@ public class LK extends Fragment {
         tvAb=(TextView)rootView.findViewById(R.id.uAb);
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
+        tv1=(TextView)rootView.findViewById(R.id.textView0);
+        tv2=(TextView)rootView.findViewById(R.id.textView);
+        tv3=(TextView)rootView.findViewById(R.id.textView4);
+        tv4=(TextView)rootView.findViewById(R.id.uAb_tv);
+        tv5=(TextView)rootView.findViewById(R.id.textView6);
+        tv6=(TextView)rootView.findViewById(R.id.textView8);
+        tv7=(TextView)rootView.findViewById(R.id.countRev);
+        tv8=(TextView)rootView.findViewById(R.id.textView7);
+        rbRate=(RatingBar)rootView.findViewById(R.id.uRate);
 
-        ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
-        ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        Glide
-                .with(this)
-                .load(R.drawable.background)
-                .into(ivBackground);
+//        ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
+//        ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
+//
+//        Glide
+//                .with(this)
+//                .load(R.drawable.background)
+//                .into(ivBackground);
 
 
 
@@ -141,8 +153,39 @@ public class LK extends Fragment {
 
         updateUI(0);
 
-        tgrTask = new TaskGetReview();
-        tgrTask.execute();
+
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        SpecUserGetter specUserGetter = retrofit.create(SpecUserGetter.class);
+
+        final Call<GetSpecUser> review = specUserGetter.serviceUser(iUid);
+
+        review.enqueue(new Callback<GetSpecUser>() {
+            @Override
+            public void onResponse(Call<GetSpecUser> call, Response<GetSpecUser> response) {
+                if (response.isSuccessful()) {
+                    Log.d("TAG","response " + response.body());
+                    tvName.setText(response.body().getName()+" "+response.body().getSurname()+" "+response.body().getOtchestvo());
+                    tvSpec.setText(response.body().getSpecName());
+                    tvAb.setText(response.body().getInfo());
+                    tvAdress.setText(response.body().getAddress());
+                    tvCity.setText(response.body().getCity());
+                    updateUI(1);
+                } else {
+                    Log.d("TAG","response code " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetSpecUser> call, Throwable t) {
+                Log.d("Tag","failure " + t);
+            }
+        });
 
 
         TextView countRev=(TextView)rootView.findViewById(R.id.countRev);
@@ -154,57 +197,6 @@ public class LK extends Fragment {
     }
 
 
-    class TaskGetReview extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pbTask.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://94.251.14.36:8080/TopMaster/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            SpecUserGetter specUserGetter = retrofit.create(SpecUserGetter.class);
-
-            final Call<GetSpecUser> review = specUserGetter.serviceUser(iUID);
-
-            review.enqueue(new Callback<GetSpecUser>() {
-                @Override
-                public void onResponse(Call<GetSpecUser> call, Response<GetSpecUser> response) {
-                    if (response.isSuccessful()) {
-                        Log.d("TAG","response " + response.body());
-                        tvName.setText(response.body().getName()+" "+response.body().getSurname()+" "+response.body().getOtchestvo());
-                        tvSpec.setText(response.body().getSpecName());
-                        tvAb.setText(response.body().getInfo());
-                        tvAdress.setText(response.body().getAddress());
-                        tvCity.setText(response.body().getCity());
-                    } else {
-                        Log.d("TAG","response code " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<GetSpecUser> call, Throwable t) {
-                    Log.d("Tag","failure " + t);
-                }
-            });
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            pbTask.setVisibility(View.GONE);
-            updateUI(1);
-        }
-    }
 
 
 
@@ -290,6 +282,21 @@ public class LK extends Fragment {
                 tvAdress.setVisibility(View.VISIBLE);
                 tvAb.setVisibility(View.VISIBLE);
                 recyclerView.setVisibility(View.VISIBLE);
+
+
+                tv1.setVisibility(View.VISIBLE);
+                tv2.setVisibility(View.VISIBLE);
+                tv3.setVisibility(View.VISIBLE);
+                tv4.setVisibility(View.VISIBLE);
+                tv5.setVisibility(View.VISIBLE);
+                tv6.setVisibility(View.VISIBLE);
+                tv7.setVisibility(View.VISIBLE);
+                tv8.setVisibility(View.VISIBLE);
+
+                rbRate.setVisibility(View.VISIBLE);
+
+                pbTask.setVisibility(View.GONE);
+
                 break;
             case 0:
                 tvName.setVisibility(View.GONE);
@@ -298,6 +305,18 @@ public class LK extends Fragment {
                 tvAdress.setVisibility(View.GONE);
                 tvAb.setVisibility(View.GONE);
                 recyclerView.setVisibility(View.GONE);
+                tv1.setVisibility(View.GONE);
+                tv2.setVisibility(View.GONE);
+                tv3.setVisibility(View.GONE);
+                tv4.setVisibility(View.GONE);
+                tv5.setVisibility(View.GONE);
+                tv6.setVisibility(View.GONE);
+                tv7.setVisibility(View.GONE);
+                tv8.setVisibility(View.GONE);
+                rbRate.setVisibility(View.GONE);
+
+                pbTask.setVisibility(View.VISIBLE);
+
                 break;
         }
 

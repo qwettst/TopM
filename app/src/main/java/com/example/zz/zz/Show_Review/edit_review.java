@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,21 +13,44 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.zz.zz.BuildConfig;
 import com.example.zz.zz.DataSendFragment;
+import com.example.zz.zz.PublishReview;
 import com.example.zz.zz.R;
+import com.example.zz.zz.SaveReviewToServer;
 import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.ReviewData;
 import com.example.zz.zz.database.DatabaseReviewHelper;
 import com.example.zz.zz.model.Review;
+import com.example.zz.zz.model.SearchReview;
+import com.example.zz.zz.model.getAllReview.ReviewsParameter;
+import com.example.zz.zz.model.getAllReview.User;
+import com.example.zz.zz.model.saveReview.ParametrRate;
+import com.example.zz.zz.model.saveReview.SaveModReview;
+import com.example.zz.zz.model.saveReview.SaveReview;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -84,48 +108,114 @@ public class edit_review extends Fragment implements DataSendFragment {
         switch (item.getItemId()) {
 
             case R.id.action_send: {
-                String name, spec, city, street, rev,author;
-                name=(etFname.getText().toString()+" "+etLname.getText().toString());
-                spec=etSpec.getText().toString();
-                city=etCity.getText().toString();
-                street=etStreet.getText().toString();
-                rev=etRev.getText().toString();
-                DateFormat df = new SimpleDateFormat("dd.MM.yy");
-                String date = df.format(Calendar.getInstance().getTime());
-                author="admin";
-                float rate;
-                rate=(rbQuality.getRating()+ rbComnctn.getRating()+ rbKonflict.getRating())/3;
+                SaveModReview svReview=new SaveModReview();
+                if(etName.getText().toString().length()!=0 && etFname.getText().toString().length()!=0 && etRev.getText().toString().length()!=0 && etCity.getText().toString().length()!=0 && etOtch.getText().toString().length()!=0)
+                {
+                    User u=new User();
+                    u.setIdUser(ardMod.getUser().getIdUser());
+                    svReview.setIdReview(ardMod.getIdReview());
+                    svReview.setUser(u);
+                    svReview.setName(etName.getText().toString());
+                    svReview.setSurname(etFname.getText().toString());
+                    svReview.setOtchestvo( etOtch.getText().toString());
+                    svReview.setCity(etCity.getText().toString());
+                    svReview.setAddress(etStreet.getText().toString());
+                    svReview.setContent(etRev.getText().toString());
+                    svReview.setSpecName(etSpec.getText().toString());
+                    svReview.setDatetime(ardMod.getDatetime());
 
-                DatabaseReviewHelper db=new DatabaseReviewHelper(getActivity());
+                    if(chOnCallYes.isChecked())
+                        svReview.setOnCall(1);
+                    else
+                        svReview.setOnCall(0);
 
-                Review review=new Review(0,author,name,spec,city,street,date,rev,rate);
-                db.updateReview(review,id);
-                Class fragmentClass;
-                fragmentClass=myReview.class;
-                try {
-                    Fragment myFragment=(Fragment)fragmentClass.newInstance();
-                    FragmentManager fragmentManager = getFragmentManager();
 
-                    View view = getActivity().getCurrentFocus();
-                    if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+
+                    HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+                    if(BuildConfig.DEBUG){
+                        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
                     }
-                    fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                } catch (java.lang.InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+
+                    OkHttpClient okClient = new OkHttpClient.Builder()
+                            .addInterceptor(loggingInterceptor)
+                            .build();
+
+                    Retrofit rftiReview = new Retrofit.Builder()
+                            .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .client(okClient)
+                            .build();
+
+                    PublishReview publishReview = rftiReview.create(PublishReview.class);
+
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonString = null;
+                    try {
+                        jsonString = mapper.writeValueAsString(svReview);
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("json " + jsonString);
+
+
+
+                    final Call<SaveModReview> call = publishReview.publishreview(jsonString);
+
+
+                    call.enqueue(new Callback<SaveModReview>() {
+                        @Override
+                        public void onResponse(Call<SaveModReview> call, Response<SaveModReview> response) {
+                            if (response.isSuccessful()) {
+                                Log.d("TAG", "response " + response.body());
+                                Bundle bundle=new Bundle();
+
+                                bundle.putString("mSign","G+");
+                                bundle.putInt("uID", 5);
+
+                                Class fragmentClass;
+                                fragmentClass=myReview.class;
+                                try {
+                                    Fragment myFragment=(Fragment)fragmentClass.newInstance();
+                                    myFragment.setArguments(bundle);
+                                    FragmentManager fragmentManager = getFragmentManager();
+                                    View view = getActivity().getCurrentFocus();
+                                    if (view != null) {
+                                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                                    }
+                                    fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+                                } catch (java.lang.InstantiationException e) {
+                                    e.printStackTrace();
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Log.d("TAG", "response code " + response.code());
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<SaveModReview> call, Throwable t) {
+                            Log.d("Tag","failure " + t);
+                        }
+                    });
+
                 }
+                else
+                    Toast.makeText(getContext(),"Поля не заполнены",Toast.LENGTH_LONG).show();
                 break;
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private RatingBar rbQuality, rbComnctn, rbKonflict;
-    private EditText etFname, etLname, etSpec, etCity, etStreet, etRev;
-    private int id;
+    private RatingBar rbQuality, rbCommunctn, rbKonflict;
+    private EditText etName, etFname,etOtch, etSpec, etCity, etStreet, etRev;
+    private CheckBox chOnCallYes,chOnCallNo;
+    private AllReviewData ardMod;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,15 +244,35 @@ public class edit_review extends Fragment implements DataSendFragment {
 
         getActivity().findViewById(R.id.search_form).setVisibility(View.GONE);
         rbQuality = (RatingBar) rootView.findViewById(R.id.ratingBar);
-        rbComnctn = (RatingBar) rootView.findViewById(R.id.ratingBar2);
+        rbCommunctn = (RatingBar) rootView.findViewById(R.id.ratingBar2);
         rbKonflict = (RatingBar) rootView.findViewById(R.id.ratingBar3);
 
+        etName=(EditText)rootView.findViewById(R.id.send_name);
         etFname=(EditText)rootView.findViewById(R.id.send_first_name);
-        etLname=(EditText)rootView.findViewById(R.id.send_last_name);
+        etOtch=(EditText)rootView.findViewById(R.id.send_otchestvo);
         etSpec=(EditText)rootView.findViewById(R.id.send_spec);
         etCity=(EditText)rootView.findViewById(R.id.send_city);
         etStreet=(EditText)rootView.findViewById(R.id.send_street);
         etRev=(EditText)rootView.findViewById(R.id.send_infoRev);
+
+        chOnCallYes=(CheckBox)rootView.findViewById(R.id.onCallYes);
+        chOnCallNo=(CheckBox)rootView.findViewById(R.id.onCallNo);
+
+        chOnCallYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(chOnCallYes.isChecked())
+                    chOnCallNo.setChecked(false);
+            }
+        });
+
+        chOnCallNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(chOnCallNo.isChecked())
+                    chOnCallYes.setChecked(false);
+            }
+        });
 
         getActivity().setTitle("Написать отзыв");
         rbQuality.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
@@ -171,7 +281,6 @@ public class edit_review extends Fragment implements DataSendFragment {
                 ratingBar.setRating(rating);
             }
         });
-
 
 
         return rootView;
@@ -202,6 +311,24 @@ public class edit_review extends Fragment implements DataSendFragment {
 
     @Override
     public void sendData(AllReviewData data) {
+        if(data != null) {
+            ardMod=data;
+            etName.setText(data.getName());
+            etFname.setText(data.getSurname());
+            etOtch.setText(data.getOtchestvo());
+            etCity.setText(data.getCity());
+            etStreet.setText(data.getAddress());
+            etRev.setText(data.getContent());
+            etSpec.setText(data.getSpec());
+
+            List<ReviewsParameter> reviewsParameterList=new ArrayList<>();
+            reviewsParameterList.addAll(data.getReviewsParameters());
+            if( reviewsParameterList.size()!=0 ) {
+                rbQuality.setRating(reviewsParameterList.get(0).getValue());
+                rbCommunctn.setRating(reviewsParameterList.get(1).getValue());
+                rbKonflict.setRating(reviewsParameterList.get(2).getValue());
+            }
+        }
 
     }
 
@@ -212,7 +339,16 @@ public class edit_review extends Fragment implements DataSendFragment {
         etCity.setText(data.getCity());
         etStreet.setText(data.getStreet());
         etRev.setText(data.gettReview());
-        id=data.getPos();
+    }
+
+    @Override
+    public void sendSearchData(SearchReview data) {
+
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 
     /**

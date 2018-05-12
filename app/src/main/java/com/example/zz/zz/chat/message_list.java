@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -15,6 +17,7 @@ import android.widget.ImageButton;
 import com.example.zz.zz.R;
 import com.example.zz.zz.adapter.MessageListAdapter;
 import com.example.zz.zz.model.ChatMessage;
+import com.example.zz.zz.model.UserProfile_DB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -47,6 +50,7 @@ public class message_list extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public message_list() {
+        setHasOptionsMenu(true);
         // Required empty public constructor
     }
 
@@ -79,6 +83,12 @@ public class message_list extends Fragment {
     private ChildEventListener mChildEventListener;
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -105,7 +115,9 @@ public class message_list extends Fragment {
                      chatMessage = messageSnapshot.getValue(ChatMessage.class);
                     }
                     chatMessageList.add(chatMessage);
+                    messeageRecyclerView.smoothScrollToPosition(messeageRecyclerView.getAdapter().getItemCount() - 1);
                     messageListAdapter.notifyDataSetChanged();
+
 
                 }
 
@@ -140,6 +152,7 @@ public class message_list extends Fragment {
             public void onClick(View view) {
                 FirebaseUser sender=FirebaseAuth.getInstance().getCurrentUser();
                 if (etMessage.getText().length() != 0) {
+
                     ChatMessage chatMessage=new ChatMessage(etMessage.getText().toString(),sender.getUid());
                     myRef.push().child("Messages").
                             setValue(chatMessage);

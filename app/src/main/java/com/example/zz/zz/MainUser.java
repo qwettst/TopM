@@ -16,6 +16,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 
 import com.example.zz.zz.Auth_User.SignIn;
@@ -27,6 +31,7 @@ import com.example.zz.zz.chat.user_chat_list;
 import com.example.zz.zz.database.DatabaseUserProfileHelper;
 import com.example.zz.zz.model.UserProfile_DB;
 import com.example.zz.zz.model.getAllReview.User;
+import com.example.zz.zz.model.getSpecUser.GetSpecUser;
 import com.facebook.login.LoginManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,14 +66,19 @@ public class MainUser extends AppCompatActivity {
 
     }
 
-
+    private ProgressBar progressBar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView nvDrawer;
+    private FrameLayout frameLayout;
 
     private String sIdU, sFirstname, sLastname, sAuth;
 
+    private int a,iSign=-1;
+
     private DatabaseUserProfileHelper db;
+
+    private Button bSearch;
 
 
 
@@ -82,7 +92,6 @@ public class MainUser extends AppCompatActivity {
         findViewById(R.id.search_form).setVisibility(View.GONE);
         Intent intent = getIntent();
         sAuth=intent.getStringExtra("mSign");
-
 
 
 
@@ -101,34 +110,26 @@ public class MainUser extends AppCompatActivity {
         setupDrawerContent(nvDrawer);
 
         db=new DatabaseUserProfileHelper(this);
-
         Class fragmentClass=allReview.class;
 
+
+        nvDrawer.getMenu().clear();
+        nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
+
+
         if(!sAuth.equals("VK"))
-            actToFragment(fragmentClass,checkAuth(sAuth));
+           checkAuth(fragmentClass,sAuth);
         else
-            getMeInfo();
+            getMeInfo(fragmentClass);
 
     }
 
     @Override
     public void onBackPressed()
     {
-        Fragment myFragment=null;
         Class fragmentClass = null;
         fragmentClass=allReview.class;
-        try{
-            myFragment=(Fragment) fragmentClass.newInstance();
-            if(fragmentClass!=null) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                setTitle("Отзывы");
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
+        actToFragment(fragmentClass,iSign);
     }
 
     @Override
@@ -177,9 +178,10 @@ public class MainUser extends AppCompatActivity {
             case R.id.lk:
                 fragmentClass=LK.class;
                 break;
-            case R.id.signout: {
+            case R.id.signout:
                 signOutAct();
-            }
+                Intent intent=new Intent(this,SignIn.class);
+                startActivity(intent);
                 break;
             case R.id.signin:
                 signInAct();
@@ -193,7 +195,8 @@ public class MainUser extends AppCompatActivity {
 
 
         }
-        actToFragment(fragmentClass,checkAuth(sAuth));
+        if(fragmentClass!=null)
+           actToFragment(fragmentClass,iSign);
         mDrawerLayout.closeDrawers();
     }
 
@@ -223,12 +226,9 @@ public class MainUser extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
         LoginManager.getInstance().logOut();
         VKSdk.logout();
-        Intent intent=new Intent(this,SignIn.class);
-        startActivity(intent);
     }
 
-    private int checkAuth(String sAuth){
-        int ret=0;
+    private void checkAuth(Class fragmentClass, String sAuth){
         FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
         switch (sAuth) {
             case "guest":
@@ -237,39 +237,34 @@ public class MainUser extends AppCompatActivity {
                 sIdU="0";
                 sFirstname="0";
                 sLastname="0";
-                ret=1;
+                iSign=-1;
+                actToFragment(fragmentClass,iSign);
                 break;
             case "VK":
-                ret=1;
-                getMeInfo();
+                getMeInfo(fragmentClass);
                 break;
             case "G+": {
-                ret=1;
-                nvDrawer.getMenu().clear();
-                nvDrawer.inflateMenu(R.menu.drawermenu);
                 sIdU = user.getUid();
                 String[] sArray = user.getDisplayName().split(" ");
                 sFirstname=sArray[0];
                 sLastname=sArray[1];
-                userProfileAuth();
+                iSign=1;
+                userProfileAuth(fragmentClass);
                 break;
             }
             case "FB": {
-                ret=1;
-                nvDrawer.getMenu().clear();
-                nvDrawer.inflateMenu(R.menu.drawermenu);
                 sIdU = user.getUid();
                 String[] sArray = user.getDisplayName().split(" ");
                 sFirstname=sArray[0];
                 sLastname=sArray[1];
-                userProfileAuth();
+                iSign=1;
+                userProfileAuth(fragmentClass);
                 break;
             }
         }
-        return ret;
     }
 
-    private void getMeInfo() {
+    private void getMeInfo(final Class fragmentClass) {
         VKApi.users().get().executeWithListener(new VKRequest.VKRequestListener() {
             private static final String TAG = "myLogs";
             @Override
@@ -281,9 +276,7 @@ public class MainUser extends AppCompatActivity {
                     sIdU=r.getString("id");
                     sFirstname=r.getString("first_name");
                     sLastname=r.getString("last_name");
-                    userProfileAuth();
-                    Class fragmentClass=allReview.class;
-                    actToFragment(fragmentClass,1);
+                    userProfileAuth(fragmentClass);
                 } catch( JSONException e ) {
                     Log.e(TAG,e.getMessage(), e);
                 }
@@ -298,21 +291,18 @@ public class MainUser extends AppCompatActivity {
             @Override
             public void onError(VKError error) {
                 new AlertDialog.Builder(MainUser.this).setMessage(error.errorMessage).show();
+                actToFragment(fragmentClass,-1);
             }
             @Override
             public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
                 // Неудачная попытка. В аргументах имеется номер попытки и общее их количество.
-
+                actToFragment(fragmentClass,-1);
             }
         });
     }
 
-    private void userProfileAuth()
+    private void userProfileAuth(final Class fragmentClass)
     {
-        UserProfile_DB user=new UserProfile_DB();
-        if(db.getUserById(sIdU)==null){
-
-
 
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
 
@@ -358,27 +348,91 @@ public class MainUser extends AppCompatActivity {
                 public void onResponse(Call<User> call, Response<User> response) {
                     if (response.isSuccessful()) {
                         Log.d("TAG","response " + response.body());
-                        UserProfile_DB uDB=new UserProfile_DB();
-                        uDB.setIdU(response.body().getIdUser());
-                        uDB.setLastname(response.body().getSurname());
-                        uDB.setFirstname(response.body().getName());
-                        uDB.setEmail(response.body().getEmail());
-                        db.insertUser(uDB);
+                        UserProfile_DB uDB;
+                        uDB=db.getUserById(response.body().getIdUser());
+                        if(uDB==null) {
+                            uDB=new UserProfile_DB();
+                            uDB.setIdU(response.body().getIdUser());
+                            uDB.setLastname(response.body().getSurname());
+                            uDB.setFirstname(response.body().getName());
+                            uDB.setEmail(response.body().getEmail());
+                            db.insertUser(uDB);
+                        }
+                        a = response.body().getIdUser();
+                        actToFragment(fragmentClass,1);
+                        nvDrawer.getMenu().clear();
+                        nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
+                        checkProfile(a);
                     } else {
                         Log.d("TAG","response code " + response.code());
+                        actToFragment(fragmentClass,-1);
                     }
                 }
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
                     Log.d("Tag","failure " + t);
+                    actToFragment(fragmentClass,-1);
+                    Toast.makeText(getApplicationContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
                 }
             });
-        }
+
         List<UserProfile_DB> us=new ArrayList<UserProfile_DB>();
         us.addAll(db.getAllUserrs());
         us.size();
 
     }
+
+    private void checkProfile(final int iUid){
+
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okClient)
+                .build();
+
+        SpecUserGetter specUserGetter = retrofit.create(SpecUserGetter.class);
+
+        final Call<GetSpecUser> specUserCall = specUserGetter.serviceUser(iUid);
+
+        specUserCall.enqueue(new Callback<GetSpecUser>() {
+            @Override
+            public void onResponse(Call<GetSpecUser> call, Response<GetSpecUser> response) {
+                if (response.isSuccessful()) {
+                    Log.d("TAG","response " + response.body());
+                    UserProfile_DB uDB;
+                    uDB=db.getUserById(response.body().getIdUser());
+                    uDB.setUprofile(1);
+                    db.updateUser(uDB,response.body().getIdUser());
+                    nvDrawer.getMenu().clear();
+                    nvDrawer.inflateMenu(R.menu.drawermenu);
+                    if(iUid==5)
+                    {
+                        nvDrawer.getMenu().clear();
+                        nvDrawer.inflateMenu(R.menu.drawermenu_mod);
+                    }
+                } else {
+                    Log.d("TAG","response code " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetSpecUser> call, Throwable t) {
+                Log.d("Tag","failure " + t);
+                Toast.makeText(getApplicationContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
 
     private void actToFragment(Class fragmentClass,int id) {
@@ -402,8 +456,6 @@ public class MainUser extends AppCompatActivity {
                 myFragment = (Fragment) fragmentClass.newInstance();
                 myFragment.setArguments(bundle);
                 setFragment(myFragment);
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
 
             } catch (InstantiationException e) {
                 e.printStackTrace();
@@ -414,5 +466,18 @@ public class MainUser extends AppCompatActivity {
 
     }
 
+    private void updateUI(int fl){
+        switch (fl){
+            case 0:
+                progressBar.setVisibility(View.VISIBLE);
+                frameLayout.setVisibility(View.GONE);
+                break;
+            default:
+                progressBar.setVisibility(View.GONE);
+                frameLayout.setVisibility(View.VISIBLE);
+                break;
+        }
+
+    }
 
 }

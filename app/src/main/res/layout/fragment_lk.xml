@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ScrollView
+
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    android:layout_width="fill_parent">
         <ImageView
             android:id="@+id/background_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
         <TextView
             android:id="@+id/Uname"
             android:layout_width="wrap_content"
@@ -65,6 +62,7 @@
             android:layout_marginTop="17dp"
             android:text="Обо мне:"
             android:textSize="12sp" />
+
         <TextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
@@ -131,6 +129,7 @@
             android:text="Отызвы:"
             android:layout_marginTop="2dp"
             android:layout_below="@+id/countRev" />
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/revinfo_recycler_view"
             android:layout_width="match_parent"
@@ -140,14 +139,11 @@
             android:layout_marginTop="2dp" />
         <ProgressBar
             android:id="@+id/progress"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:indeterminateTint="@color/colorPrimary"
-            android:indeterminateTintMode="src_in"
-            android:visibility="gone" />
-    </RelativeLayout>
+            android:layout_centerInParent="true"/>
+</RelativeLayout>
 
-</ScrollView>
 
 

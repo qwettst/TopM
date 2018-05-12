@@ -126,10 +126,12 @@ public class SendReview extends Fragment {
                     rvParam.setParameterName("Качество услуг");
                     rateReviewList.add(rvParam);
 
+                    rvParam=new ParametrRate();
                     rvParam.setValue( rbCommunctn.getRating());
                     rvParam.setParameterName("Коммуникация");
                     rateReviewList.add(rvParam);
 
+                    rvParam=new ParametrRate();
                     rvParam.setValue( rbKonflict.getRating());
                     rvParam.setParameterName("Конфликтность");
                     rateReviewList.add(rvParam);

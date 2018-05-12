@@ -9,10 +9,13 @@
         android:title="Чат"
         />
 
+    <item android:id="@+id/meReview"
+        android:title="Модерация"
+        />
 
     <item android:id="@+id/lk"
         android:title="Личный кабинет"
-    />
+        />
 
     <item android:id="@+id/signout"
         android:title="Выход"

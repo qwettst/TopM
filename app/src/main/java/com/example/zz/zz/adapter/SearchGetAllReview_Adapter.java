@@ -1,8 +1,6 @@
 package com.example.zz.zz.adapter;
 
 import android.os.Handler;
-
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,27 +14,29 @@ import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
 import com.example.zz.zz.Show_Review.MainReview;
 import com.example.zz.zz.model.AllReviewData;
+import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.GetReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Pavel on 02.05.2018.
+ * Created by Pavel on 12.05.2018.
  */
 
-public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adapter.MyViewHolder> {
+public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetAllReview_Adapter.MyViewHolder>{
     private List<GetReview> getReviewList;
     private FragmentManager mFragment;
     private DataSendFragment dataFromActivityToFragment;
+    private SearchReview searchReview;
 
-
-    public GetAllReview_Adapter(List<GetReview> getReviewList, FragmentManager fragment) {
+    public SearchGetAllReview_Adapter(List<GetReview> getReviewList,SearchReview searchReview, FragmentManager fragment) {
         this.getReviewList = getReviewList;
         mFragment  = fragment;
+        this.searchReview=searchReview;
     }
-
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView first_name, spec ,city,street,date;
@@ -101,12 +101,11 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
 
     }
 
-
     @Override
-    public GetAllReview_Adapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SearchGetAllReview_Adapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.review_item, parent, false);
-        return new GetAllReview_Adapter.MyViewHolder(itemView);
+        return new SearchGetAllReview_Adapter.MyViewHolder(itemView);
     }
 
 
@@ -114,26 +113,34 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         GetReview getReview = getReviewList.get(position);
-        holder.first_name.setText(getReview.getName()+" "+getReview.getSurname()+" "+getReview.getOtchestvo());
-        holder.spec.setText(getReview.getSpecName());
-        holder.city.setText(getReview.getCity());
-        holder.street.setText(getReview.getAddress());
-        holder.date.setText(getReview.getDatetime());
 
         float rateReview=0;
         List<ReviewsParameter> reviewsParameterList=new ArrayList<>();
         reviewsParameterList.addAll(getReview.getReviewsParameters());
         if(reviewsParameterList.size()!=0)
             rateReview=(reviewsParameterList.get(0).getValue()+reviewsParameterList.get(1).getValue()+reviewsParameterList.get(2).getValue())/3;
+        if(rateReview==3) {
+            holder.first_name.setText(getReview.getName() + " " + getReview.getSurname() + " " + getReview.getOtchestvo());
+            holder.spec.setText(getReview.getSpecName());
+            holder.city.setText(getReview.getCity());
+            holder.street.setText(getReview.getAddress());
+            holder.date.setText(getReview.getDatetime());
+            holder.rate.setRating(rateReview);
+        }
+        else {
+          // removeItem(position);
+        }
+    }
 
-        holder.rate.setRating(rateReview);
+    public void removeItem(int position) {
+        this.getReviewList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
     }
 
     @Override
     public int getItemCount() {
         return getReviewList.size();
     }
-
-
 
 }

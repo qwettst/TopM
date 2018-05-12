@@ -12,11 +12,13 @@ public class UserProfile_DB {
     public static final String COLUMN_FIRSTNAME = "firstname";
     public static final String COLUMN_LASTNAME = "lastname";
     public static final String COLUMN_EMAIL = "email";
+    public static final String COLUMN_UPROFILE = "uprofile";
 
-    private Integer idU;
+    private int idU;
     private String firstname;
     private String lastname;
     private String email;
+    private int uprofile;
 
 
     public static final String CREATE_TABLE =
@@ -24,20 +26,22 @@ public class UserProfile_DB {
                     + COLUMN_ID + " TEXT,"
                     + COLUMN_FIRSTNAME + " TEXT,"
                     + COLUMN_LASTNAME + " TEXT,"
-                    + COLUMN_EMAIL + " TEXT"
+                    + COLUMN_EMAIL + " TEXT,"
+                    + COLUMN_UPROFILE + " TEXT"
                     + ")";
     public UserProfile_DB(){
 
     }
 
-    public UserProfile_DB(Integer idU, String firstname, String lastname, String email){
+    public UserProfile_DB(int idU, String firstname, String lastname, String email, int uprofile){
         this.idU=idU;
         this.firstname=firstname;
         this.lastname=lastname;
         this.email=email;
+        this.uprofile=uprofile;
     }
 
-    public void setIdU(Integer idU) {
+    public void setIdU(int idU) {
         this.idU = idU;
     }
 
@@ -49,7 +53,7 @@ public class UserProfile_DB {
         this.lastname = lastname;
     }
 
-    public Integer getIdU() {
+    public int getIdU() {
         return idU;
     }
 
@@ -68,5 +72,13 @@ public class UserProfile_DB {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setUprofile(int uprofile) {
+        this.uprofile = uprofile;
+    }
+
+    public int getUprofile() {
+        return uprofile;
     }
 }

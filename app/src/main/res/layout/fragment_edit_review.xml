@@ -4,17 +4,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:fitsSystemWindows="true">
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <ImageView
             android:id="@+id/background_image"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
         <EditText
-            android:id="@+id/send_first_name"
+            android:id="@+id/send_name"
             style="@style/FullWidthEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,16 +22,33 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_above="@+id/send_last_name"
+            android:layout_above="@+id/send_first_name"
             android:layout_alignParentStart="true"
             android:background="@android:color/darker_gray" />
+
         <EditText
-            android:id="@+id/send_last_name"
+            android:id="@+id/send_first_name"
+            style="@style/FullWidthEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_name"
+            android:hint="Фамилия"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/send_otchestvo"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/darker_gray" />
+
+        <EditText
+            android:id="@+id/send_otchestvo"
             style="@style/FullWidthEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/send_first_name"
-            android:hint="Фамилия"
+            android:hint="Отчество"
             android:textSize="14sp"
             android:textStyle="normal" />
         <View
@@ -47,7 +62,7 @@
             style="@style/FullWidthEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/send_last_name"
+            android:layout_below="@+id/send_otchestvo"
             android:hint="Профессия"
             android:textSize="14sp"
             android:textStyle="normal" />
@@ -87,13 +102,43 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/send_street"
             android:background="@android:color/darker_gray" />
+        <TextView
+            android:hint="Работа по вызову"
+            android:padding="10dp"
+            android:id="@+id/onCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/send_street"
+            android:textSize="14sp"
+            android:textStyle="normal" />
+
+        <CheckBox
+            android:id="@+id/onCallYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/send_infoRev"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/onCall"
+            android:text="Да" />
+
+        <CheckBox
+            android:id="@+id/onCallNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/send_infoRev"
+            android:layout_marginStart="27dp"
+            android:layout_toEndOf="@+id/onCallYes"
+            android:text="Нет" />
+
+
+
         <EditText
             android:id="@+id/send_infoRev"
             style="@style/FullWidthEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/send_street"
+            android:layout_below="@+id/onCall"
             android:ems="10"
             android:hint="Текст Отзыва"
             android:inputType="textMultiLine"
@@ -177,5 +222,4 @@
             android:textSize="14sp"
             android:textStyle="normal" />
     </RelativeLayout>
-
 </ScrollView>

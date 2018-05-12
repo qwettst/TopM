@@ -9,6 +9,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -43,6 +45,7 @@ public class user_chat_list extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public user_chat_list() {
+        setHasOptionsMenu(true);
         // Required empty public constructor
     }
 
@@ -65,6 +68,13 @@ public class user_chat_list extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -83,6 +93,7 @@ public class user_chat_list extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_chat_list, container,
                 false);
+        getActivity().setTitle("Общий чат");
 
         ImageView ivBackground;
 
@@ -110,7 +121,7 @@ public class user_chat_list extends Fragment {
     }
 
     private void PopulateEmployeeData() {
-        ChatListInfo chatListInfo = new ChatListInfo("Самойлов Иван Геннадьевич","Электрик");
+        ChatListInfo chatListInfo = new ChatListInfo("Общий чат","");
         chatListInfoList.add(chatListInfo);
         chatListAdapter.notifyDataSetChanged();
     }

@@ -20,8 +20,10 @@ import com.bumptech.glide.Glide;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
 import com.example.zz.zz.database.DatabaseReviewHelper;
+import com.example.zz.zz.database.DatabaseUserProfileHelper;
 import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.ReviewData;
+import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
 
 import java.util.ArrayList;
@@ -69,8 +71,12 @@ public class MainReview extends Fragment implements DataSendFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.toolbar_menu_review_settings, menu);
+        if(ardMod!=null) {
+            menu.clear();
+            inflater.inflate(R.menu.toolbar_menu_review_settings, menu);
+        }
+        else
+            menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -78,72 +84,41 @@ public class MainReview extends Fragment implements DataSendFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            case R.id.rev_remove: {
-                if (iPos >= 0) {
-
-                    DatabaseReviewHelper db = new DatabaseReviewHelper(getActivity());
-                    db.deleteReview(iPos);
-
-                    Class fragmentClass;
-                    fragmentClass = myReview.class;
-                    try {
-                        Fragment myFragment = (Fragment) fragmentClass.newInstance();
-                        FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                    } catch (java.lang.InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            }
                 case R.id.rev_edit:
                 {
-                    if(iPos>0){
-                        final ReviewData reviewData=new ReviewData();
+                    DatabaseUserProfileHelper db;
+                    db=new DatabaseUserProfileHelper(getContext());
+                        if(db.getUserById(5)!=null){
 
-                        reviewData.setAuthor(tvAuthor.getText().toString());
-                        reviewData.setNameMaster(tvName.getText().toString());
-                        reviewData.setSpec(tvSpec.getText().toString());
-                        reviewData.setCity(tvCity.getText().toString());
-                        reviewData.setStreet(tvStreet.getText().toString());
-                        reviewData.setDateReview(tvDate.getText().toString());
-                        reviewData.setTReview(tvReview.getText().toString());
-                        reviewData.setPos(iPos);
-                        Class fragmentClass;
-                        fragmentClass=edit_review.class;
-                        Fragment myFragment=null;
-                        FragmentManager mFragment=getActivity().getSupportFragmentManager();
-                        try {
+                            Class fragmentClass;
+                            fragmentClass=edit_review.class;
+                            Fragment myFragment=null;
+                            FragmentManager mFragment=getActivity().getSupportFragmentManager();
+                            try {
 
-                            myFragment=(Fragment)fragmentClass.newInstance();
+                                myFragment=(Fragment)fragmentClass.newInstance();
 
-                        } catch (java.lang.InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                        final Handler handler = new Handler();
-
-                        final Runnable r = new Runnable() {
-                            public void run() {
-                                dataSendFragment.sendReviewData(reviewData);
+                            } catch (java.lang.InstantiationException e) {
+                                e.printStackTrace();
+                            } catch (IllegalAccessException e) {
+                                e.printStackTrace();
                             }
-                        };
-                        dataSendFragment = (DataSendFragment) myFragment;
+                            final Handler handler = new Handler();
 
-                        mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+                            final Runnable r = new Runnable() {
+                                public void run() {
+                                    dataSendFragment.sendData(ardMod);
+                                }
+                            };
+                            dataSendFragment = (DataSendFragment) myFragment;
+
+                            mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
 
 
-                        handler.postDelayed(r, 0);
-
-
-                    }
-
-
-                    }
-                break;
+                            handler.postDelayed(r, 0);
+                        }
+                        break;
+                }
         }
 
         return super.onOptionsItemSelected(item);
@@ -168,6 +143,7 @@ public class MainReview extends Fragment implements DataSendFragment {
     private RatingBar rb1, rb2, rb3;
     private int iPos=-1;
     private DataSendFragment dataSendFragment;
+    private AllReviewData ardMod;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -226,6 +202,7 @@ public class MainReview extends Fragment implements DataSendFragment {
 
     public void sendData(AllReviewData data) {
         if(data != null) {
+            ardMod=data;
             tvAuthor.setText(data.getUser().getName()+" "+data.getUser().getSurname());
             tvName.setText(data.getName()+" "+data.getSurname()+" "+data.getOtchestvo());
             tvCity.setText(data.getCity());
@@ -233,6 +210,7 @@ public class MainReview extends Fragment implements DataSendFragment {
             tvReview.setText(data.getContent());
             tvDate.setText(data.getDatetime());
             tvSpec.setText(data.getSpec());
+
 
             List<ReviewsParameter> reviewsParameterList=new ArrayList<>();
             reviewsParameterList.addAll(data.getReviewsParameters());
@@ -256,6 +234,16 @@ public class MainReview extends Fragment implements DataSendFragment {
             tvReview.setText(data.gettReview());
             iPos=data.getPos();
         }
+    }
+
+    @Override
+    public void sendSearchData(SearchReview data) {
+
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 
 

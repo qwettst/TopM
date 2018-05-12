@@ -15,6 +15,10 @@ public class AllReviewData {
 
     }
 
+    private int status;
+
+    private int idReview;
+
     private User user;
 
     private String surname;
@@ -118,5 +122,21 @@ public class AllReviewData {
 
     public List<ReviewsParameter> getReviewsParameters() {
         return reviewsParameters;
+    }
+
+    public void setIdReview(int idReview) {
+        this.idReview = idReview;
+    }
+
+    public int getIdReview() {
+        return idReview;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getStatus() {
+        return status;
     }
 }

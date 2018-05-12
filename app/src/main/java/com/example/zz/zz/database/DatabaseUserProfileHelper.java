@@ -17,7 +17,7 @@ import java.util.List;
 
 public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     private static final String DATABASE_NAME = "userprofile_db";
 
@@ -48,7 +48,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
         values.put(UserProfile_DB.COLUMN_FIRSTNAME,userProfile.getFirstname());
         values.put(UserProfile_DB.COLUMN_LASTNAME,userProfile.getLastname());
         values.put(UserProfile_DB.COLUMN_EMAIL,userProfile.getEmail());
-
+        values.put(UserProfile_DB.COLUMN_UPROFILE,userProfile.getUprofile());
         // insert row
         db.insert(UserProfile_DB.TABLE_NAME, null, values);
 
@@ -64,7 +64,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(UserProfile_DB.TABLE_NAME,
-                new String[]{UserProfile_DB.COLUMN_ID, UserProfile_DB.COLUMN_FIRSTNAME, UserProfile_DB.COLUMN_LASTNAME, UserProfile_DB.COLUMN_EMAIL},
+                new String[]{UserProfile_DB.COLUMN_ID, UserProfile_DB.COLUMN_FIRSTNAME, UserProfile_DB.COLUMN_LASTNAME, UserProfile_DB.COLUMN_EMAIL, UserProfile_DB.COLUMN_UPROFILE},
                 UserProfile_DB.COLUMN_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
 
@@ -76,7 +76,8 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
                 cursor.getInt(cursor.getColumnIndex(UserProfile_DB.COLUMN_ID)),
                 cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_FIRSTNAME)),
                 cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_LASTNAME)),
-                cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_EMAIL)));
+                cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_EMAIL)),
+                cursor.getInt(cursor.getColumnIndex(UserProfile_DB.COLUMN_UPROFILE)));
         // close the db connection
         cursor.close();
         return user;
@@ -99,6 +100,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
                 user.setFirstname(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_FIRSTNAME)));
                 user.setLastname(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_LASTNAME)));
                 user.setEmail(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_EMAIL)));
+                user.setUprofile(cursor.getInt(cursor.getColumnIndex(UserProfile_DB.COLUMN_UPROFILE)));
 
             } while (cursor.moveToNext());
 
@@ -128,6 +130,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
                 user.setFirstname(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_FIRSTNAME)));
                 user.setLastname(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_LASTNAME)));
                 user.setEmail(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_EMAIL)));
+                user.setUprofile(cursor.getInt(cursor.getColumnIndex(UserProfile_DB.COLUMN_UPROFILE)));
 
             } while (cursor.moveToNext());
 
@@ -158,6 +161,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
                 user.setFirstname(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_FIRSTNAME)));
                 user.setLastname(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_LASTNAME)));
                 user.setEmail(cursor.getString(cursor.getColumnIndex(UserProfile_DB.COLUMN_EMAIL)));
+                user.setUprofile(cursor.getInt(cursor.getColumnIndex(UserProfile_DB.COLUMN_UPROFILE)));
                 users.add(user);
             } while (cursor.moveToNext());
         }
@@ -176,7 +180,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
     }
 
 
-    public void updateUser(UserProfile_DB userProfile, String id) {
+    public void updateUser(UserProfile_DB userProfile, int id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -185,6 +189,7 @@ public class DatabaseUserProfileHelper extends SQLiteOpenHelper {
         values.put(UserProfile_DB.COLUMN_FIRSTNAME,userProfile.getFirstname());
         values.put(UserProfile_DB.COLUMN_LASTNAME,userProfile.getLastname());
         values.put(UserProfile_DB.COLUMN_EMAIL,userProfile.getEmail());
+        values.put(UserProfile_DB.COLUMN_UPROFILE,userProfile.getUprofile());
 
         // updating row
         db.update(UserProfile_DB.TABLE_NAME, values, UserProfile_DB.COLUMN_ID + " = ?",

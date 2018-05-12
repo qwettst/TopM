@@ -2,8 +2,8 @@ package com.example.zz.zz.Show_Review;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,16 +23,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.bumptech.glide.Glide;
+import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
 import com.example.zz.zz.ReviewGetter;
-import com.example.zz.zz.ReviewModGetter;
 import com.example.zz.zz.adapter.GetAllReview_Adapter;
+import com.example.zz.zz.adapter.SearchGetAllReview_Adapter;
+import com.example.zz.zz.model.AllReviewData;
+import com.example.zz.zz.model.ReviewData;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.GetReview;
 
-
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link SearchReview_fragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link SearchReview_fragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,15 +51,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link myReview.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link myReview#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class myReview extends Fragment  implements View.OnClickListener{
+public class SearchReview_fragment extends Fragment  implements DataSendFragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -62,7 +63,7 @@ public class myReview extends Fragment  implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
 
-    public myReview() {
+    public SearchReview_fragment() {
         // Required empty public constructor
     }
 
@@ -72,11 +73,11 @@ public class myReview extends Fragment  implements View.OnClickListener{
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment myReview.
+     * @return A new instance of fragment allReview.
      */
     // TODO: Rename and change types and number of parameters
-    public static myReview newInstance(String param1, String param2) {
-        myReview fragment = new myReview();
+    public static SearchReview_fragment newInstance(String param1, String param2) {
+        SearchReview_fragment fragment = new SearchReview_fragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -84,20 +85,34 @@ public class myReview extends Fragment  implements View.OnClickListener{
         return fragment;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
     private RecyclerView rvReviewView;
-    private GetAllReview_Adapter getAllReviewAdapter;
+    private SearchGetAllReview_Adapter searchGetAllReview_adapter;
     private List<GetReview> reviewInfo;
     private ProgressBar pbTask;
     private CheckBox chY,chN;
     private Button bSearch;
+    private Bundle bundle;
+    private DataSendFragment dataFromActivityToFragment;
+    private SearchReview srToAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.fragment_all_review, container,
                 false);
-        getActivity().setTitle("Модерация");
+
+        getActivity().setTitle("Поиск");
+
+        getActivity().findViewById(R.id.search_form).setVisibility(View.GONE);
 
         ImageView ivBackground;
 
@@ -122,18 +137,22 @@ public class myReview extends Fragment  implements View.OnClickListener{
         chN.setChecked(true);
 
 
+
         rvReviewView = (RecyclerView) rootView.findViewById(R.id.all_review_recyler);
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();
-        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager);
+        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager);
         rvReviewView.setLayoutManager(mLayoutManager);
         rvReviewView.setItemAnimator(new DefaultItemAnimator());
-        rvReviewView.setAdapter(getAllReviewAdapter);
+        rvReviewView.setAdapter(searchGetAllReview_adapter);
 
 
-        final Bundle bundle = this.getArguments();
+
+
+
+        bundle = this.getArguments();
         String strSign= bundle.getString("mSign");
         if(!strSign.equals("guest")) {
             FloatingActionButton fab = rootView.findViewById(R.id.fab);
@@ -145,7 +164,7 @@ public class myReview extends Fragment  implements View.OnClickListener{
                     Bundle bSReview =new Bundle();
                     if(bundle.getInt("uID")!=-1) {
                         bSReview.putString("mSign",bundle.getString("mSign"));
-                        bSReview.putInt("uId", bundle.getInt("uID"));
+                        bSReview.putInt("uID", bundle.getInt("uID"));
                         Class fragmentClass;
                         fragmentClass = SendReview.class;
                         try {
@@ -176,7 +195,7 @@ public class myReview extends Fragment  implements View.OnClickListener{
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        ReviewModGetter reviewGetter = rftiReview.create(ReviewModGetter.class);
+        ReviewGetter reviewGetter = rftiReview.create(ReviewGetter.class);
 
         final Call<List<GetReview>> review = reviewGetter.serviceReview();
 
@@ -186,7 +205,10 @@ public class myReview extends Fragment  implements View.OnClickListener{
                 if (response.isSuccessful()) {
                     Log.d("TAG","response " + response.body().size());
                     reviewInfo.addAll(response.body());
-                    getAllReviewAdapter.notifyDataSetChanged();
+                    searchGetAllReview_adapter.notifyDataSetChanged();
+                    reviewInfo.remove(2);
+                    searchGetAllReview_adapter.notifyItemRemoved(2);
+
                     pbTask.setVisibility(View.GONE);
                     rvReviewView.setVisibility(View.VISIBLE);
                 } else {
@@ -209,12 +231,35 @@ public class myReview extends Fragment  implements View.OnClickListener{
         return rootView;
     }
 
+
+
+
+
+
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
     @Override
     public void onClick(View view) {
-
         switch (view.getId()){
             case R.id.s_start:
-                SearchReview searchReview = new SearchReview();
+                final SearchReview searchReview = new SearchReview();
 
                 RatingBar rb=getActivity().findViewById(R.id.s_rate);
                 TextView tvName=getActivity().findViewById(R.id.s_name);
@@ -233,6 +278,32 @@ public class myReview extends Fragment  implements View.OnClickListener{
                 searchReview.setCity(tvCity.getText().toString());
                 searchReview.setAdress(tvAdress.getText().toString());
                 searchReview.setRate(rb.getRating());
+
+                Class fragmentClass;
+                fragmentClass = SearchReview_fragment.class;
+                try {
+                    Fragment myFragment = (Fragment) fragmentClass.newInstance();
+                    myFragment.setArguments(bundle);
+                    FragmentManager fragmentManager = getFragmentManager();
+                    final Handler handler = new Handler();
+
+                    final Runnable r = new Runnable() {
+                        public void run() {
+                            dataFromActivityToFragment.sendSearchData(searchReview);
+                        }
+                    };
+                    dataFromActivityToFragment = (DataSendFragment) myFragment;
+                    fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+
+                    handler.postDelayed(r, 10);
+                }  catch (java.lang.InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+
+
+
                 break;
             case R.id.checkBoxY:
                 if(chY.isChecked())
@@ -245,23 +316,20 @@ public class myReview extends Fragment  implements View.OnClickListener{
         }
     }
 
-
-
-
-
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void sendData(AllReviewData data) {
+
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void sendReviewData(ReviewData data) {
+
     }
 
-
-
+    @Override
+    public void sendSearchData(SearchReview data) {
+        srToAdapter=data;
+    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -277,4 +345,8 @@ public class myReview extends Fragment  implements View.OnClickListener{
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+
+
+
 }
