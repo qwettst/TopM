@@ -27,7 +27,7 @@
 
 ## Изменено:
 
-ДБ UserProfile (Добавлено поле - LKProfile)
+БД UserProfile (Добавлено поле - LKProfile)
 
 ### Чат:
 
