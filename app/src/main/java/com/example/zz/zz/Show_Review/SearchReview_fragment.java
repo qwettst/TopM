@@ -141,12 +141,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         rvReviewView = (RecyclerView) rootView.findViewById(R.id.all_review_recyler);
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        FragmentManager fragmentManager = getFragmentManager();
-        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager);
-        rvReviewView.setLayoutManager(mLayoutManager);
-        rvReviewView.setItemAnimator(new DefaultItemAnimator());
-        rvReviewView.setAdapter(searchGetAllReview_adapter);
+
 
 
 
@@ -206,8 +201,6 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
                     Log.d("TAG","response " + response.body().size());
                     reviewInfo.addAll(response.body());
                     searchGetAllReview_adapter.notifyDataSetChanged();
-                    reviewInfo.remove(2);
-                    searchGetAllReview_adapter.notifyItemRemoved(2);
 
                     pbTask.setVisibility(View.GONE);
                     rvReviewView.setVisibility(View.VISIBLE);
@@ -329,6 +322,12 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
     @Override
     public void sendSearchData(SearchReview data) {
         srToAdapter=data;
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        FragmentManager fragmentManager = getFragmentManager();
+        rvReviewView.setLayoutManager(mLayoutManager);
+        rvReviewView.setItemAnimator(new DefaultItemAnimator());
+        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager);
+        rvReviewView.setAdapter(searchGetAllReview_adapter);
     }
 
     /**

@@ -289,7 +289,7 @@ public class allReview extends Fragment  implements View.OnClickListener{
                     dataFromActivityToFragment = (DataSendFragment) myFragment;
                     fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
 
-                    handler.postDelayed(r, 10);
+                    handler.postDelayed(r, 0);
                 }
                 catch (java.lang.InstantiationException e) {
                     e.printStackTrace();

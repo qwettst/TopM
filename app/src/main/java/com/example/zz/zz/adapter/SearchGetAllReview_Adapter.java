@@ -31,6 +31,7 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
     private FragmentManager mFragment;
     private DataSendFragment dataFromActivityToFragment;
     private SearchReview searchReview;
+    private int i_posremove =0;
 
     public SearchGetAllReview_Adapter(List<GetReview> getReviewList,SearchReview searchReview, FragmentManager fragment) {
         this.getReviewList = getReviewList;
@@ -110,7 +111,10 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
 
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+
+
+        int fl=0;
 
         GetReview getReview = getReviewList.get(position);
 
@@ -119,23 +123,53 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
         reviewsParameterList.addAll(getReview.getReviewsParameters());
         if(reviewsParameterList.size()!=0)
             rateReview=(reviewsParameterList.get(0).getValue()+reviewsParameterList.get(1).getValue()+reviewsParameterList.get(2).getValue())/3;
-        if(rateReview==3) {
-            holder.first_name.setText(getReview.getName() + " " + getReview.getSurname() + " " + getReview.getOtchestvo());
-            holder.spec.setText(getReview.getSpecName());
-            holder.city.setText(getReview.getCity());
-            holder.street.setText(getReview.getAddress());
-            holder.date.setText(getReview.getDatetime());
-            holder.rate.setRating(rateReview);
+
+        String s_name=getReview.getName() + " " + getReview.getSurname() + " " + getReview.getOtchestvo();
+
+        holder.first_name.setText(s_name);
+        holder.spec.setText(getReview.getSpecName());
+        holder.city.setText(getReview.getCity());
+        holder.street.setText(getReview.getAddress());
+        holder.date.setText(getReview.getDatetime());
+        holder.rate.setRating(rateReview);
+        if(s_name.contains(searchReview.getName())) {
+            if (getReview.getCity().contains(searchReview.getCity())) {
+                if (getReview.getAddress().contains(searchReview.getAdress()));
+                else {
+                    removeItem(position-i_posremove);
+                    fl=1;
+                    i_posremove++;
+                }
+            }
+            else {
+                removeItem(position-i_posremove);
+                fl=1;
+                i_posremove++;
+            }
         }
         else {
-          // removeItem(position);
+            removeItem(position-i_posremove);
+            fl=1;
+            i_posremove++;
+        }
+
+        if(rateReview<searchReview.getRate() && fl!=1) {
+            removeItem(position - i_posremove);
+            i_posremove++;
         }
     }
 
-    public void removeItem(int position) {
-        this.getReviewList.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, getItemCount());
+
+
+    public void removeItem(final int position) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                getReviewList.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, getItemCount());
+            }
+        });
     }
 
     @Override
