@@ -3,6 +3,7 @@ package com.example.zz.zz.Show_Review;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -88,6 +90,8 @@ public class SendReview extends Fragment {
     }
 
 
+
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -101,7 +105,7 @@ public class SendReview extends Fragment {
 
             case R.id.action_send: {
                 SaveReview svReview=new SaveReview();
-                if(etName.getText().toString().length()!=0 && etFname.getText().toString().length()!=0 && etRev.getText().toString().length()!=0 && etCity.getText().toString().length()!=0 && etOtch.getText().toString().length()!=0)
+                if(etRev.getText().toString().length()!=0)
                 {
                     User u=new User();
                     u.setIdUser(iUID);
@@ -193,7 +197,7 @@ public class SendReview extends Fragment {
                 bSReview.putInt("uID", bundle.getInt("uID"));
 
                 Class fragmentClass;
-                fragmentClass=myReview.class;
+                fragmentClass=allReview.class;
                 try {
                     Fragment myFragment=(Fragment)fragmentClass.newInstance();
                     FragmentManager fragmentManager = getFragmentManager();

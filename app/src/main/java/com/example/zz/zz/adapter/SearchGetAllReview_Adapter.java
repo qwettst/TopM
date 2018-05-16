@@ -153,7 +153,7 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
             i_posremove++;
         }
 
-        if(rateReview<searchReview.getRate() && fl!=1) {
+        if(rateReview < searchReview.getRate() && fl!=1) {
             removeItem(position - i_posremove);
             i_posremove++;
         }
@@ -165,9 +165,11 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                getReviewList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, getItemCount());
+                if(position>=0) {
+                    getReviewList.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, getItemCount());
+                }
             }
         });
     }

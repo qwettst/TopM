@@ -24,24 +24,17 @@ import com.example.zz.zz.BuildConfig;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.PublishReview;
 import com.example.zz.zz.R;
-import com.example.zz.zz.SaveReviewToServer;
 import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.ReviewData;
-import com.example.zz.zz.database.DatabaseReviewHelper;
-import com.example.zz.zz.model.Review;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
 import com.example.zz.zz.model.getAllReview.User;
-import com.example.zz.zz.model.saveReview.ParametrRate;
 import com.example.zz.zz.model.saveReview.SaveModReview;
-import com.example.zz.zz.model.saveReview.SaveReview;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -345,6 +338,8 @@ public class edit_review extends Fragment implements DataSendFragment {
     public void sendSearchData(SearchReview data) {
 
     }
+
+
 
     @Override
     public void onClick(View view) {

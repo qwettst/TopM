@@ -9,6 +9,10 @@
         android:title="Чат"
         />
 
+    <item android:id="@+id/UserReview"
+        android:title="Мои отзывы"
+        />
+
 
     <item android:id="@+id/lk"
         android:title="Личный кабинет"

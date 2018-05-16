@@ -130,7 +130,12 @@
             android:layout_toEndOf="@+id/onCallYes"
             android:text="Нет" />
 
-
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignStart="@+id/textView2"
+            android:layout_below="@+id/onCall"
+            android:background="@android:color/darker_gray" />
 
         <EditText
             android:id="@+id/send_infoRev"
@@ -141,8 +146,9 @@
             android:layout_below="@+id/onCall"
             android:ems="10"
             android:hint="Текст Отзыва"
-            android:inputType="textMultiLine"
-            android:text="Читал отзывы про мастера, соответствуют. Приехал в оговоренное время, со своим инструментом, разобрался в проблеме и отремонтировал диван. На диване можно сидеть, на такой результат и расчитывли. Мастер дал гарантию на работу." />
+            android:inputType="textMultiLine"/>
+
+
         <RatingBar
             android:id="@+id/ratingBar"
             style="@android:style/Widget.Material.Light.RatingBar"

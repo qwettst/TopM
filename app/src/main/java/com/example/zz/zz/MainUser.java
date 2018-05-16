@@ -1,6 +1,7 @@
 package com.example.zz.zz;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,8 +16,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -25,6 +29,7 @@ import android.widget.Toast;
 import com.example.zz.zz.Auth_User.SignIn;
 import com.example.zz.zz.LK_User.Create_LK;
 import com.example.zz.zz.LK_User.LK;
+import com.example.zz.zz.Show_Review.UserReview;
 import com.example.zz.zz.Show_Review.allReview;
 import com.example.zz.zz.Show_Review.myReview;
 import com.example.zz.zz.chat.user_chat_list;
@@ -163,6 +168,11 @@ public class MainUser extends AppCompatActivity {
 
     private void selectItemDrawer(MenuItem item)
     {
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
         Class fragmentClass = null;
         int id = item.getItemId();
         switch (id) {
@@ -188,6 +198,9 @@ public class MainUser extends AppCompatActivity {
                 break;
             case R.id.create_lk:
                 fragmentClass= Create_LK.class;
+                break;
+            case R.id.UserReview:
+                fragmentClass= UserReview.class;
                 break;
             default:
                 fragmentClass=allReview.class;
@@ -362,6 +375,11 @@ public class MainUser extends AppCompatActivity {
                         actToFragment(fragmentClass,1);
                         nvDrawer.getMenu().clear();
                         nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
+                        if(response.body().getIdUser()==5)
+                        {
+                            nvDrawer.getMenu().clear();
+                            nvDrawer.inflateMenu(R.menu.drawermenu_mod);
+                        }
                         checkProfile(a);
                     } else {
                         Log.d("TAG","response code " + response.code());
@@ -428,7 +446,6 @@ public class MainUser extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetSpecUser> call, Throwable t) {
                 Log.d("Tag","failure " + t);
-                Toast.makeText(getApplicationContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -478,6 +495,22 @@ public class MainUser extends AppCompatActivity {
                 break;
         }
 
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof EditText) {
+                v.clearFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+            }
+        }
+
+        return super.dispatchTouchEvent(event);
     }
 
 }

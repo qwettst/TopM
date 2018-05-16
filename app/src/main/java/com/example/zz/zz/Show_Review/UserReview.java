@@ -24,33 +24,34 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.zz.zz.BuildConfig;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
-import com.example.zz.zz.ReviewGetter;
-import com.example.zz.zz.adapter.SearchGetAllReview_Adapter;
-import com.example.zz.zz.model.AllReviewData;
-import com.example.zz.zz.model.ReviewData;
+import com.example.zz.zz.UserReviewGetter;
+import com.example.zz.zz.adapter.GetAllReview_Adapter;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.GetReview;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SearchReview_fragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SearchReview_fragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SearchReview_fragment extends Fragment  implements DataSendFragment{
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link UserReview.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link UserReview#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class UserReview extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -62,7 +63,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
 
     private OnFragmentInteractionListener mListener;
 
-    public SearchReview_fragment() {
+    public UserReview() {
         // Required empty public constructor
     }
 
@@ -72,11 +73,11 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment allReview.
+     * @return A new instance of fragment UserReview.
      */
     // TODO: Rename and change types and number of parameters
-    public static SearchReview_fragment newInstance(String param1, String param2) {
-        SearchReview_fragment fragment = new SearchReview_fragment();
+    public static UserReview newInstance(String param1, String param2) {
+        UserReview fragment = new UserReview();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -94,36 +95,35 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
     }
 
     private RecyclerView rvReviewView;
-    private SearchGetAllReview_Adapter searchGetAllReview_adapter;
+    private GetAllReview_Adapter getAllReviewAdapter;
     private List<GetReview> reviewInfo;
     private ProgressBar pbTask;
     private CheckBox chY,chN;
     private Button bSearch;
     private Bundle bundle;
     private DataSendFragment dataFromActivityToFragment;
-    private SearchReview srToAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_all_review, container,
+        View rootView = inflater.inflate(R.layout.fragment_user_review, container,
                 false);
 
-        getActivity().setTitle("Поиск");
-
-        getActivity().findViewById(R.id.search_form).setVisibility(View.GONE);
+        getActivity().setTitle("Мои отзывы");
 
         ImageView ivBackground;
 
         ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
         ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        reviewInfo=new ArrayList<>();
+        reviewInfo=new ArrayList<GetReview>();
 
         Glide
                 .with(this)
                 .load(R.drawable.background)
                 .into(ivBackground);
+
+        getActivity().findViewById(R.id.search_form).setVisibility(View.GONE);
 
         bSearch=getActivity().findViewById(R.id.s_start);
         bSearch.setOnClickListener(this);
@@ -140,8 +140,12 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         rvReviewView = (RecyclerView) rootView.findViewById(R.id.all_review_recyler);
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
-
-
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        FragmentManager fragmentManager = getFragmentManager();
+        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager);
+        rvReviewView.setLayoutManager(mLayoutManager);
+        rvReviewView.setItemAnimator(new DefaultItemAnimator());
+        rvReviewView.setAdapter(getAllReviewAdapter);
 
 
 
@@ -183,15 +187,28 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         pbTask.setVisibility(View.VISIBLE);
         rvReviewView.setVisibility(View.GONE);
 
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
 
         Retrofit rftiReview = new Retrofit.Builder()
                 .baseUrl("http://94.251.14.36:8080/TopMaster/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okClient)
                 .build();
 
-        ReviewGetter reviewGetter = rftiReview.create(ReviewGetter.class);
 
-        final Call<List<GetReview>> review = reviewGetter.serviceReview();
+        UserReviewGetter reviewGetter = rftiReview.create(UserReviewGetter.class);
+
+        final Call<List<GetReview>> review = reviewGetter.serviceReview(bundle.getInt("uID"));
 
         review.enqueue(new Callback<List<GetReview>>() {
             @Override
@@ -199,8 +216,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
                 if (response.isSuccessful()) {
                     Log.d("TAG","response " + response.body().size());
                     reviewInfo.addAll(response.body());
-                    searchGetAllReview_adapter.notifyDataSetChanged();
-
+                    getAllReviewAdapter.notifyDataSetChanged();
                     pbTask.setVisibility(View.GONE);
                     rvReviewView.setVisibility(View.VISIBLE);
                 } else {
@@ -213,7 +229,8 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
             @Override
             public void onFailure(Call<List<GetReview>> call, Throwable t) {
                 Log.d("Tag","failure " + t);
-                Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                if(getContext()!=null)
+                    Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
                 pbTask.setVisibility(View.GONE);
                 rvReviewView.setVisibility(View.VISIBLE);
             }
@@ -222,12 +239,6 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
 
         return rootView;
     }
-
-
-
-
-
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -287,15 +298,13 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
                     dataFromActivityToFragment = (DataSendFragment) myFragment;
                     fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
 
-                    handler.postDelayed(r, 10);
-                }  catch (java.lang.InstantiationException e) {
+                    handler.postDelayed(r, 0);
+                }
+                catch (java.lang.InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-
-
-
                 break;
             case R.id.checkBoxY:
                 if(chY.isChecked())
@@ -307,29 +316,6 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
                 break;
         }
     }
-
-    @Override
-    public void sendData(AllReviewData data) {
-
-    }
-
-    @Override
-    public void sendReviewData(ReviewData data) {
-
-    }
-
-    @Override
-    public void sendSearchData(SearchReview data) {
-        srToAdapter=data;
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        FragmentManager fragmentManager = getFragmentManager();
-        rvReviewView.setLayoutManager(mLayoutManager);
-        rvReviewView.setItemAnimator(new DefaultItemAnimator());
-        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager);
-        rvReviewView.setAdapter(searchGetAllReview_adapter);
-    }
-
-
 
     /**
      * This interface must be implemented by activities that contain this
@@ -345,8 +331,4 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
-
-
-
 }

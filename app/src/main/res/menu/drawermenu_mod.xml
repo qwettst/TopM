@@ -8,6 +8,9 @@
     <item android:id="@+id/chat"
         android:title="Чат"
         />
+    <item android:id="@+id/UserReview"
+        android:title="Мои отзывы"
+        />
 
     <item android:id="@+id/meReview"
         android:title="Модерация"

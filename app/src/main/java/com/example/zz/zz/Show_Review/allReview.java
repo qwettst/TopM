@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.zz.zz.BuildConfig;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
 import com.example.zz.zz.ReviewGetter;
@@ -35,6 +36,8 @@ import com.example.zz.zz.model.getAllReview.GetReview;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -185,11 +188,24 @@ public class allReview extends Fragment  implements View.OnClickListener{
         pbTask.setVisibility(View.VISIBLE);
         rvReviewView.setVisibility(View.GONE);
 
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
 
         Retrofit rftiReview = new Retrofit.Builder()
                 .baseUrl("http://94.251.14.36:8080/TopMaster/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okClient)
                 .build();
+
 
         ReviewGetter reviewGetter = rftiReview.create(ReviewGetter.class);
 

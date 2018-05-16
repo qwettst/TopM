@@ -1,6 +1,7 @@
 package com.example.zz.zz.LK_User;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.BuildConfig;
+import com.example.zz.zz.MainUser;
 import com.example.zz.zz.R;
 import com.example.zz.zz.SaveSpecUser;
 import com.example.zz.zz.Show_Review.myReview;
@@ -162,25 +164,9 @@ public class Create_LK extends Fragment {
                     Bundle bSUser=new Bundle();
                     bSUser.putString("mSign",bundle.getString("mSign"));
                     bSUser.putInt("uID", bundle.getInt("uID"));
-
-                    Class fragmentClass;
-                    fragmentClass = myReview.class;
-                    try {
-                        Fragment myFragment = (Fragment) fragmentClass.newInstance();
-                        FragmentManager fragmentManager = getFragmentManager();
-                        myFragment.setArguments(bSUser);
-
-                        View view = getActivity().getCurrentFocus();
-                        if (view != null) {
-                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
-                        fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                    } catch (java.lang.InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
+                    Intent intent=new Intent(getActivity() ,MainUser.class);
+                    intent.putExtra("mSign",bundle.getString("mSign"));
+                    startActivity(intent);
 
                 }
                 break;
@@ -212,6 +198,7 @@ public class Create_LK extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create__lk, container,
                 false);
+        getActivity().setTitle("Создать ЛК");
 
         bundle = this.getArguments();
         iUID= bundle.getInt("uID");

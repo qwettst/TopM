@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
-import com.example.zz.zz.database.DatabaseReviewHelper;
 import com.example.zz.zz.database.DatabaseUserProfileHelper;
 import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.ReviewData;
@@ -240,6 +239,7 @@ public class MainReview extends Fragment implements DataSendFragment {
     public void sendSearchData(SearchReview data) {
 
     }
+
 
     @Override
     public void onClick(View view) {
