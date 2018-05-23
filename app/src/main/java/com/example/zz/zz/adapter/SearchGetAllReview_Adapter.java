@@ -134,12 +134,20 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
         holder.rate.setRating(rateReview);
         if(s_name.contains(searchReview.getName())) {
             if (getReview.getCity().contains(searchReview.getCity())) {
-                if (getReview.getAddress().contains(searchReview.getAdress()));
-                else {
-                    removeItem(position-i_posremove);
-                    fl=1;
-                    i_posremove++;
+                if (getReview.getAddress().contains(searchReview.getAdress())) {
+                    if (getReview.getSpecName().contains(searchReview.getSpec())) ;
+
+                    else {
+                        removeItem(position - i_posremove);
+                        fl = 1;
+                        i_posremove++;
+                    }
                 }
+                else{
+                        removeItem(position - i_posremove);
+                        fl = 1;
+                        i_posremove++;
+                    }
             }
             else {
                 removeItem(position-i_posremove);
@@ -152,6 +160,14 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
             fl=1;
             i_posremove++;
         }
+
+        if(searchReview.getOnCall()!=getReview.getOnCall() && fl!=1)
+            if(searchReview.getOnCall()!=3 && fl!=1)
+            {
+                removeItem(position - i_posremove);
+                fl = 1;
+                i_posremove++;
+            }
 
         if(rateReview < searchReview.getRate() && fl!=1) {
             removeItem(position - i_posremove);

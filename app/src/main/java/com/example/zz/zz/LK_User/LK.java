@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.R;
@@ -43,7 +44,7 @@ public class LK extends Fragment {
 
     private RecyclerView recyclerView;
     private ReviewInfo_LK_Adapter ReviewInfo_LK_Adapter;
-    private List<reviewInfo_lk> reviewInfo_lkList = new ArrayList<>();
+
 
 
     private static final String ARG_PARAM1 = "param1";
@@ -101,6 +102,7 @@ public class LK extends Fragment {
     private RatingBar rbRate;
     private ProgressBar pbTask;
     private int iUid;
+    private List<GetReview> getReviewList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -133,13 +135,13 @@ public class LK extends Fragment {
         rbRate=(RatingBar)rootView.findViewById(R.id.uRate);
 
 
-//        ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
-//        ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//
-//        Glide
-//                .with(this)
-//                .load(R.drawable.background)
-//                .into(ivBackground);
+        ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
+        ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
+        Glide
+                .with(this)
+                .load(R.drawable.background)
+                .into(ivBackground);
 
 
 
@@ -147,7 +149,7 @@ public class LK extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.revinfo_recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
-        ReviewInfo_LK_Adapter = new ReviewInfo_LK_Adapter(reviewInfo_lkList);
+        ReviewInfo_LK_Adapter = new ReviewInfo_LK_Adapter(getReviewList);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(ReviewInfo_LK_Adapter);
 
@@ -175,6 +177,11 @@ public class LK extends Fragment {
                     tvAb.setText(response.body().getInfo());
                     tvAdress.setText(response.body().getAddress());
                     tvCity.setText(response.body().getCity());
+                    getReviewList.addAll(response.body().getReviews());
+                    ReviewInfo_LK_Adapter.notifyDataSetChanged();
+
+                    rbRate.setRating(ReviewInfo_LK_Adapter.getRateSpec());
+                    tv7.setText(String.valueOf(ReviewInfo_LK_Adapter.getItemCount()));
                     updateUI(1);
                 } else {
                     Log.d("TAG","response code " + response.code());
@@ -184,6 +191,7 @@ public class LK extends Fragment {
             @Override
             public void onFailure(Call<GetSpecUser> call, Throwable t) {
                 Log.d("Tag","failure " + t);
+                Toast.makeText(getContext(),"ЛК не существует",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -233,45 +241,7 @@ public class LK extends Fragment {
     }
 
 
-    private void reviewInfoData() {
-        reviewInfo_lk reviewInfoLk = new reviewInfo_lk("Гость", "четко","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
 
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-        reviewInfoLk = new reviewInfo_lk("Гость", "Красиво","19.03.18");
-        reviewInfo_lkList.add(reviewInfoLk);
-
-
-        ReviewInfo_LK_Adapter.notifyDataSetChanged();
-    }
 
     void updateUI(int a){
         switch (a) {
@@ -321,6 +291,8 @@ public class LK extends Fragment {
         }
 
     }
+
+
 
 
 }

@@ -18,6 +18,7 @@ public class ReviewData {
     private String dateReview;
     private String tReview;
     private int pos;
+    private int idReview;
 
     public String getAuthor() {
         return author;
@@ -81,5 +82,13 @@ public class ReviewData {
 
     public void setPos(int pos) {
         this.pos = pos;
+    }
+
+    public void setIdReview(int idReview) {
+        this.idReview = idReview;
+    }
+
+    public int getIdReview() {
+        return idReview;
     }
 }

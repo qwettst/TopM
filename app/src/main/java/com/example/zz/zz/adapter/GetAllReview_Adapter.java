@@ -1,5 +1,6 @@
 package com.example.zz.zz.adapter;
 
+import android.os.Bundle;
 import android.os.Handler;
 
 
@@ -30,11 +31,13 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
     private List<GetReview> getReviewList;
     private FragmentManager mFragment;
     private DataSendFragment dataFromActivityToFragment;
+    private int idSpec;
 
 
-    public GetAllReview_Adapter(List<GetReview> getReviewList, FragmentManager fragment) {
+    public GetAllReview_Adapter(List<GetReview> getReviewList, FragmentManager fragment, int idSpec) {
         this.getReviewList = getReviewList;
         mFragment  = fragment;
+        this.idSpec=idSpec;
     }
 
 
@@ -74,9 +77,12 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
             Class fragmentClass;
             fragmentClass=MainReview.class;
             Fragment myFragment=null;
+            Bundle bundle =new Bundle();
+            bundle.putInt("uID", idSpec);
 
             try {
                 myFragment=(Fragment)fragmentClass.newInstance();
+                myFragment.setArguments(bundle);
                 final Handler handler = new Handler();
 
                 final Runnable r = new Runnable() {
@@ -88,7 +94,7 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
                 mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
 
 
-                handler.postDelayed(r, 10);
+                handler.postDelayed(r, 0);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

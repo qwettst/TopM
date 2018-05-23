@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,18 +16,32 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.zz.zz.AddReviewToLK;
+import com.example.zz.zz.BuildConfig;
 import com.example.zz.zz.DataSendFragment;
+import com.example.zz.zz.LK_User.LK;
 import com.example.zz.zz.R;
 import com.example.zz.zz.database.DatabaseUserProfileHelper;
+import com.example.zz.zz.model.AddSpecUserReview;
 import com.example.zz.zz.model.AllReviewData;
-import com.example.zz.zz.model.ReviewData;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainReview extends Fragment implements DataSendFragment {
@@ -70,12 +85,17 @@ public class MainReview extends Fragment implements DataSendFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         if(ardMod!=null) {
-            menu.clear();
-            inflater.inflate(R.menu.toolbar_menu_review_settings, menu);
+            if (ardMod.getStatus() == 0)
+                inflater.inflate(R.menu.toolbar_menu_review_settings, menu);
+            else
+                if(bundle.getInt("uID")!=-1)
+                    inflater.inflate(R.menu.toolbar_menu_review_user, menu);
         }
         else
-            menu.clear();
+            if(bundle.getInt("uID")!=-1)
+                inflater.inflate(R.menu.toolbar_menu_review_user, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -83,7 +103,7 @@ public class MainReview extends Fragment implements DataSendFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-                case R.id.rev_edit:
+            case R.id.rev_edit:
                 {
                     DatabaseUserProfileHelper db;
                     db=new DatabaseUserProfileHelper(getContext());
@@ -94,30 +114,108 @@ public class MainReview extends Fragment implements DataSendFragment {
                             Fragment myFragment=null;
                             FragmentManager mFragment=getActivity().getSupportFragmentManager();
                             try {
-
                                 myFragment=(Fragment)fragmentClass.newInstance();
+                                final Handler handler = new Handler();
+
+                                final Runnable r = new Runnable() {
+                                    public void run() {
+                                        dataSendFragment.sendData(ardMod);
+                                    }
+                                };
+                                dataSendFragment = (DataSendFragment) myFragment;
+
+                                mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+
+
+                                handler.postDelayed(r, 0);
 
                             } catch (java.lang.InstantiationException e) {
                                 e.printStackTrace();
                             } catch (IllegalAccessException e) {
                                 e.printStackTrace();
                             }
-                            final Handler handler = new Handler();
 
-                            final Runnable r = new Runnable() {
-                                public void run() {
-                                    dataSendFragment.sendData(ardMod);
-                                }
-                            };
-                            dataSendFragment = (DataSendFragment) myFragment;
-
-                            mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
-
-
-                            handler.postDelayed(r, 0);
                         }
                         break;
                 }
+
+            case R.id.rev_addReview:
+            {
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+                if(BuildConfig.DEBUG){
+                    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+                }
+
+                OkHttpClient okClient = new OkHttpClient.Builder()
+                        .addInterceptor(loggingInterceptor)
+                        .build();
+
+                Retrofit rfti = new Retrofit.Builder()
+                        .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(okClient)
+                        .build();
+
+                AddSpecUserReview addR=new AddSpecUserReview(bundle.getInt("uID"),ardMod.getIdReview());
+
+                AddReviewToLK addReviewToLK = rfti.create(AddReviewToLK.class);
+
+
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonString = null;
+                try {
+                    jsonString = mapper.writeValueAsString(addR);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("json " + jsonString);
+
+
+
+                final Call<Void> call = addReviewToLK.addSpecReview(jsonString);
+
+
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+
+                        } else {
+                            Log.d("TAG","response code " + response.code());
+
+                        }
+                        if (response.code()==200)
+                            Toast.makeText(getContext(),"Добавлено",Toast.LENGTH_LONG).show();
+
+                    }
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d("Tag","failure " + t);
+
+                        Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                    }
+                });
+                break;
+            }
+            case R.id.rev_showLK:{
+                bundle.putInt("uID",ardMod.getUser().getIdUser());
+                Class fragmentClass;
+                fragmentClass=LK.class;
+                Fragment myFragment=null;
+                FragmentManager mFragment=getActivity().getSupportFragmentManager();
+                try {
+                    myFragment=(Fragment)fragmentClass.newInstance();
+                    myFragment.setArguments(bundle);
+                    mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+
+                } catch (java.lang.InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -143,12 +241,16 @@ public class MainReview extends Fragment implements DataSendFragment {
     private int iPos=-1;
     private DataSendFragment dataSendFragment;
     private AllReviewData ardMod;
+    private Bundle bundle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main_rewiew, container,
                 false);
+
+        bundle = this.getArguments();
+
 
         ImageView ivBackground;
 
@@ -221,19 +323,6 @@ public class MainReview extends Fragment implements DataSendFragment {
         }
     }
 
-    @Override
-    public void sendReviewData(ReviewData data) {
-        if(data != null) {
-            tvAuthor.setText(data.getAuthor());
-            tvName.setText(data.getNameMaster()+" ");
-            tvSpec.setText(data.getSpec());
-            tvCity.setText(data.getCity());
-            tvStreet.setText(data.getStreet());
-            tvDate.setText(data.getDateReview());
-            tvReview.setText(data.gettReview());
-            iPos=data.getPos();
-        }
-    }
 
     @Override
     public void sendSearchData(SearchReview data) {

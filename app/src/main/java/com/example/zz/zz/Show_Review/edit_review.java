@@ -325,14 +325,7 @@ public class edit_review extends Fragment implements DataSendFragment {
 
     }
 
-    @Override
-    public void sendReviewData(ReviewData data) {
-        etFname.setText(data.getNameMaster());
-        etSpec.setText(data.getSpec());
-        etCity.setText(data.getCity());
-        etStreet.setText(data.getStreet());
-        etRev.setText(data.gettReview());
-    }
+
 
     @Override
     public void sendSearchData(SearchReview data) {

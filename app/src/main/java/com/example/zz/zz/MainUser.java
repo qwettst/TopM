@@ -135,6 +135,7 @@ public class MainUser extends AppCompatActivity {
         Class fragmentClass = null;
         fragmentClass=allReview.class;
         actToFragment(fragmentClass,iSign);
+        mDrawerLayout.closeDrawers();
     }
 
     @Override
@@ -289,6 +290,7 @@ public class MainUser extends AppCompatActivity {
                     sIdU=r.getString("id");
                     sFirstname=r.getString("first_name");
                     sLastname=r.getString("last_name");
+                    iSign=1;
                     userProfileAuth(fragmentClass);
                 } catch( JSONException e ) {
                     Log.e(TAG,e.getMessage(), e);
@@ -375,6 +377,7 @@ public class MainUser extends AppCompatActivity {
                         actToFragment(fragmentClass,1);
                         nvDrawer.getMenu().clear();
                         nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
+                        List<UserProfile_DB> gh=db.getAllUserrs();
                         if(response.body().getIdUser()==5)
                         {
                             nvDrawer.getMenu().clear();

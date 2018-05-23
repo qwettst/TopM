@@ -13,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.zz.zz.R;
 import com.example.zz.zz.adapter.MessageListAdapter;
+import com.example.zz.zz.database.DatabaseUserProfileHelper;
 import com.example.zz.zz.model.ChatMessage;
 import com.example.zz.zz.model.UserProfile_DB;
 import com.google.firebase.auth.FirebaseAuth;
@@ -77,6 +79,8 @@ public class message_list extends Fragment {
     private List<ChatMessage> chatMessageList = new ArrayList<>();
     private RecyclerView messeageRecyclerView;
     private MessageListAdapter messageListAdapter;
+    private Bundle bundle;
+    private UserProfile_DB uDB=null;
 
 
     private DatabaseReference myRef;
@@ -92,74 +96,85 @@ public class message_list extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         View rootView = inflater.inflate(R.layout.fragment_message_list, container,
                 false);
-        sendMessage=rootView.findViewById(R.id.button_chatbox_send);
-        etMessage=rootView.findViewById(R.id.edittext_chatbox);
-        messeageRecyclerView=rootView.findViewById(R.id.reyclerview_message_list);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        messeageRecyclerView.setLayoutManager(mLayoutManager);
+
+        bundle = this.getArguments();
+        DatabaseUserProfileHelper db;
+        db=new DatabaseUserProfileHelper(getContext());
+        if(db.getUserById(bundle.getInt("uID"))!=null){
+            uDB=db.getUserById(bundle.getInt("uID"));
 
 
-        myRef = FirebaseDatabase.getInstance().getReference();
+            sendMessage=rootView.findViewById(R.id.button_chatbox_send);
+            etMessage=rootView.findViewById(R.id.edittext_chatbox);
+            messeageRecyclerView=rootView.findViewById(R.id.reyclerview_message_list);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            messeageRecyclerView.setLayoutManager(mLayoutManager);
 
-        messageListAdapter=new MessageListAdapter(chatMessageList);
-        messeageRecyclerView.setAdapter(messageListAdapter);
 
-        if(mChildEventListener==null){
-            mChildEventListener= new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    ChatMessage chatMessage=null;
-                    for (DataSnapshot messageSnapshot: dataSnapshot.getChildren()) {
-                     chatMessage = messageSnapshot.getValue(ChatMessage.class);
+            myRef = FirebaseDatabase.getInstance().getReference();
+            messageListAdapter = new MessageListAdapter(chatMessageList, uDB.getFirstname() + " " + uDB.getLastname());
+            messeageRecyclerView.setAdapter(messageListAdapter);
+
+                if (mChildEventListener == null) {
+                    mChildEventListener = new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            ChatMessage chatMessage = null;
+                            for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                                chatMessage = messageSnapshot.getValue(ChatMessage.class);
+                            }
+                            chatMessageList.add(chatMessage);
+                            messeageRecyclerView.smoothScrollToPosition(messeageRecyclerView.getAdapter().getItemCount() - 1);
+                            messageListAdapter.notifyDataSetChanged();
+
+
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            System.out.println("Не смогли установить onDisconnect:" + databaseError.getMessage());
+
+                        }
+                    };
+
+                    myRef.addChildEventListener(mChildEventListener);
+
+                }
+
+                sendMessage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FirebaseUser sender = FirebaseAuth.getInstance().getCurrentUser();
+                        if (etMessage.getText().length() != 0 && uDB != null) {
+
+                            ChatMessage chatMessage = new ChatMessage(etMessage.getText().toString(), uDB.getFirstname() + " " + uDB.getLastname());
+                            myRef.push().child("Messages").
+                                    setValue(chatMessage);
+                            etMessage.setText("");
+                        }
                     }
-                    chatMessageList.add(chatMessage);
-                    messeageRecyclerView.smoothScrollToPosition(messeageRecyclerView.getAdapter().getItemCount() - 1);
-                    messageListAdapter.notifyDataSetChanged();
-
-
-                }
-
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("Не смогли установить onDisconnect:" + databaseError.getMessage());
-
-                }
-            };
-
-            myRef.addChildEventListener(mChildEventListener);
-
+                });
         }
-
-        sendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseUser sender=FirebaseAuth.getInstance().getCurrentUser();
-                if (etMessage.getText().length() != 0) {
-
-                    ChatMessage chatMessage=new ChatMessage(etMessage.getText().toString(),sender.getUid());
-                    myRef.push().child("Messages").
-                            setValue(chatMessage);
-                    etMessage.setText("");
-                }
-            }
-        });
+        else
+            Toast.makeText(getContext(),"Ошибка входа",Toast.LENGTH_LONG).show();
         return rootView;
     }
     @Override

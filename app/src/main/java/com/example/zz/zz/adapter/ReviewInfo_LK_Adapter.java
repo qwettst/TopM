@@ -7,9 +7,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.zz.zz.R;
-import com.example.zz.zz.LK_User.reviewInfo_lk;
+import com.example.zz.zz.model.getAllReview.GetReview;
+import com.example.zz.zz.model.getAllReview.ReviewsParameter;
 
+import java.util.ArrayList;
 import java.util.List;
+
 
 
 /**
@@ -18,7 +21,7 @@ import java.util.List;
 
 public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Adapter.MyViewHolder> {
 
-    private List<reviewInfo_lk> reviewInfo_lk_List;
+    private List<GetReview> getReviewList;
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
@@ -33,8 +36,8 @@ public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Ad
         }
     }
 
-    public ReviewInfo_LK_Adapter(List<reviewInfo_lk> reviewInfo_lk_List) {
-        this.reviewInfo_lk_List = reviewInfo_lk_List;
+    public ReviewInfo_LK_Adapter(List<GetReview> getReviewList) {
+        this.getReviewList = getReviewList;
     }
 
     @Override
@@ -47,16 +50,31 @@ public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Ad
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
-        reviewInfo_lk reviewInfo_lk = reviewInfo_lk_List.get(position);
-        holder.author.setText(reviewInfo_lk.getAuthor());
-        holder.review.setText(reviewInfo_lk.getShortReview());
-        holder.date.setText(reviewInfo_lk.getDate());
+        GetReview getReview = getReviewList.get(position);
+        holder.author.setText(getReview.getUser().getSurname()+" "+getReview.getUser().getName());
+        holder.review.setText(getReview.getContent());
+        holder.date.setText(getReview.getDatetime());
     }
 
     @Override
     public int getItemCount() {
-        return reviewInfo_lk_List.size();
+        return getReviewList.size();
     }
+
+    public float getRateSpec() {
+        float frate=0;
+        int i=getItemCount();
+        GetReview getReview = null;
+        for (int k=0;k<i;k++) {
+            getReview = getReviewList.get(k);
+            List<ReviewsParameter> reviewsParameterList = new ArrayList<>();
+            reviewsParameterList.addAll(getReview.getReviewsParameters());
+            if (reviewsParameterList.size() != 0)
+                frate = (reviewsParameterList.get(0).getValue() + reviewsParameterList.get(1).getValue() + reviewsParameterList.get(2).getValue()) / 3 + frate;
+        }
+
+        return frate/getItemCount();
+    }
+
 
 }

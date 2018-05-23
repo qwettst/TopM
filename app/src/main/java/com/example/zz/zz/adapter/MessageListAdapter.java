@@ -26,10 +26,12 @@ public class MessageListAdapter extends  RecyclerView.Adapter {
 
 
     private List<ChatMessage> mMessageList;
+    private String sUserName;
 
 
 
-    public MessageListAdapter( List<ChatMessage> messageList) {
+    public MessageListAdapter( List<ChatMessage> messageList, String sUserName) {
+        this.sUserName=sUserName;
         mMessageList = messageList;
     }
 
@@ -70,10 +72,9 @@ public class MessageListAdapter extends  RecyclerView.Adapter {
     public int getItemViewType(int position) {
         ChatMessage chatMessage = (ChatMessage) mMessageList.get(position);
         String sender=chatMessage.getMessageSender();
-        FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();
-        String recUser=currentUser.getUid();
 
-        if (sender.equals(recUser)) {
+
+        if (sender.equals(sUserName)) {
             return VIEW_TYPE_MESSAGE_SENT;
         } else {
 

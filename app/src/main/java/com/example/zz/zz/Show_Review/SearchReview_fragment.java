@@ -256,20 +256,24 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
                 RatingBar rb=getActivity().findViewById(R.id.s_rate);
                 TextView tvName=getActivity().findViewById(R.id.s_name);
                 TextView tvDatetime=getActivity().findViewById(R.id.s_daterev);
-                Spinner spinnerSpec=getActivity().findViewById(R.id.spinner);
+                TextView tvSpec=getActivity().findViewById(R.id.s_spec);
                 TextView tvCity=getActivity().findViewById(R.id.s_city);
                 TextView tvAdress=getActivity().findViewById(R.id.s_street);
 
                 if(chY.isChecked())
                     searchReview.setOnCall(1);
                 else
-                    searchReview.setOnCall(0);
+                    if(chN.isChecked())
+                        searchReview.setOnCall(0);
+                    else
+                        searchReview.setOnCall(3);
 
                 searchReview.setName(tvName.getText().toString());
                 searchReview.setDatetime(tvDatetime.getText().toString());
                 searchReview.setCity(tvCity.getText().toString());
                 searchReview.setAdress(tvAdress.getText().toString());
                 searchReview.setRate(rb.getRating());
+                searchReview.setSpec(tvSpec.getText().toString());
 
                 Class fragmentClass;
                 fragmentClass = SearchReview_fragment.class;
@@ -313,10 +317,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
 
     }
 
-    @Override
-    public void sendReviewData(ReviewData data) {
 
-    }
 
     @Override
     public void sendSearchData(SearchReview data) {

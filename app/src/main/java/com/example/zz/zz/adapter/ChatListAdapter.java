@@ -1,5 +1,6 @@
 package com.example.zz.zz.adapter;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
 
     private List<ChatListInfo> chatListInfoList;
     private FragmentManager mFragment;
+    private Bundle bundle;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView sender, mesText;
@@ -47,6 +49,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
             Fragment myFragment=null;
             try {
                 myFragment=(Fragment)fragmentClass.newInstance();
+                myFragment.setArguments(bundle);
                 mFragment.beginTransaction().replace(R.id.flcontent, myFragment).commit();
             } catch (InstantiationException e) {
                 e.printStackTrace();
@@ -57,9 +60,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
         }
 
     }
-    public ChatListAdapter(List<ChatListInfo> chatListInfoList,FragmentManager fragment) {
+    public ChatListAdapter(List<ChatListInfo> chatListInfoList,FragmentManager fragment, Bundle bundle) {
         this.chatListInfoList = chatListInfoList;
         mFragment  = fragment;
+        this.bundle=bundle;
     }
 
     @Override

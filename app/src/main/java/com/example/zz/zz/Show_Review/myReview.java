@@ -125,15 +125,17 @@ public class myReview extends Fragment  implements View.OnClickListener{
         rvReviewView = (RecyclerView) rootView.findViewById(R.id.all_review_recyler);
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
+        final Bundle bundle = this.getArguments();
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();
-        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager);
+        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager,bundle.getInt("uID"));
         rvReviewView.setLayoutManager(mLayoutManager);
         rvReviewView.setItemAnimator(new DefaultItemAnimator());
         rvReviewView.setAdapter(getAllReviewAdapter);
 
 
-        final Bundle bundle = this.getArguments();
+
         String strSign= bundle.getString("mSign");
         if(!strSign.equals("guest")) {
             FloatingActionButton fab = rootView.findViewById(R.id.fab);
@@ -219,20 +221,25 @@ public class myReview extends Fragment  implements View.OnClickListener{
                 RatingBar rb=getActivity().findViewById(R.id.s_rate);
                 TextView tvName=getActivity().findViewById(R.id.s_name);
                 TextView tvDatetime=getActivity().findViewById(R.id.s_daterev);
-                Spinner spinnerSpec=getActivity().findViewById(R.id.spinner);
+                TextView tvSpec=getActivity().findViewById(R.id.s_spec);
                 TextView tvCity=getActivity().findViewById(R.id.s_city);
                 TextView tvAdress=getActivity().findViewById(R.id.s_street);
 
                 if(chY.isChecked())
                     searchReview.setOnCall(1);
                 else
-                    searchReview.setOnCall(0);
+                    if(chN.isChecked())
+                        searchReview.setOnCall(0);
+                    else
+                        searchReview.setOnCall(3);
 
                 searchReview.setName(tvName.getText().toString());
                 searchReview.setDatetime(tvDatetime.getText().toString());
                 searchReview.setCity(tvCity.getText().toString());
                 searchReview.setAdress(tvAdress.getText().toString());
                 searchReview.setRate(rb.getRating());
+                searchReview.setSpec(tvSpec.getText().toString());
+
                 break;
             case R.id.checkBoxY:
                 if(chY.isChecked())

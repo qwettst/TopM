@@ -14,6 +14,5 @@ import com.example.zz.zz.model.SearchReview;
 
 public interface DataSendFragment extends View.OnClickListener {
     void sendData(AllReviewData data);
-    void sendReviewData(ReviewData data);
     void sendSearchData(SearchReview data);
 }

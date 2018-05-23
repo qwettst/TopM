@@ -69,27 +69,27 @@ public class Review_DB_Adapter extends RecyclerView.Adapter<Review_DB_Adapter.My
             Class fragmentClass;
             fragmentClass= MainReview.class;
             Fragment myFragment=null;
-
-            try {
-                myFragment=(Fragment)fragmentClass.newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-            final Handler handler = new Handler();
-
-            final Runnable r = new Runnable() {
-                public void run() {
-                    dataSendFragment.sendReviewData(reviewData);
-                }
-            };
-            dataSendFragment = (DataSendFragment) myFragment;
-
-            mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
-
-
-            handler.postDelayed(r, 0);
+//
+//            try {
+//                myFragment=(Fragment)fragmentClass.newInstance();
+//            } catch (InstantiationException e) {
+//                e.printStackTrace();
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            }
+//            final Handler handler = new Handler();
+//
+//            final Runnable r = new Runnable() {
+//                public void run() {
+//                    dataSendFragment.sendReviewData(reviewData);
+//                }
+//            };
+//            dataSendFragment = (DataSendFragment) myFragment;
+//
+//            mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+//
+//
+//            handler.postDelayed(r, 0);
 
 
         }

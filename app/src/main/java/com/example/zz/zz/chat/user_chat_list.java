@@ -86,6 +86,7 @@ public class user_chat_list extends Fragment {
     private List<ChatListInfo> chatListInfoList = new ArrayList<>();
     private RecyclerView recyclerView;
     private ChatListAdapter chatListAdapter;
+    private Bundle bundle;
 
 
     @Override
@@ -93,6 +94,9 @@ public class user_chat_list extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_user_chat_list, container,
                 false);
+
+
+        bundle = this.getArguments();
         getActivity().setTitle("Общий чат");
 
         ImageView ivBackground;
@@ -109,7 +113,7 @@ public class user_chat_list extends Fragment {
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();
-        chatListAdapter= new ChatListAdapter(chatListInfoList,fragmentManager);
+        chatListAdapter= new ChatListAdapter(chatListInfoList,fragmentManager,bundle);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(chatListAdapter);
