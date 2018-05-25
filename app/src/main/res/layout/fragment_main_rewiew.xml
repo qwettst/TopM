@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/textView6"
             android:layout_below="@+id/textView6"
-            android:text="Конфлиектность"
+            android:text="Конфликтность"
             android:layout_marginTop="10dp"
             android:textSize="12sp" />
         <TextView
@@ -112,7 +112,7 @@
             android:ems="10"
             android:inputType="none"
 
-            android:text="Читал отзывы про мастера, соответствуют. Приехал в оговоренное время, со своим инструментом, разобрался в проблеме и отремонтировал диван. На диване можно сидеть, на такой результат и расчитывли. Мастер дал гарантию на работу." />
+            android:text="" />
         <TextView
             android:id="@+id/textView9"
             android:layout_width="wrap_content"
