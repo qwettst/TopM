@@ -182,8 +182,8 @@ public class message_list extends Fragment {
         if(mChildEventListener!=null){
             myRef.removeEventListener(mChildEventListener);
             mChildEventListener=null;
-            super.onDestroy();
         }
+        super.onDestroy();
     }
 
 

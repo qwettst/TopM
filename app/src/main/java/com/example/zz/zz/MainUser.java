@@ -463,9 +463,14 @@ public class MainUser extends AppCompatActivity {
                 bundle.putInt("uID", -1);
                 break;
             default:
-                UserProfile_DB uDb=db.getUserById(sIdU);
-                bundle.putString("mSign",sAuth);
-                bundle.putInt("uID", uDb.getIdU());
+                try {
+                    UserProfile_DB uDb=db.getUserById(sIdU);
+                    bundle.putString("mSign",sAuth);
+                    bundle.putInt("uID", uDb.getIdU());
+                }catch (NullPointerException e) {
+
+                }
+
                  break;
 
         }
