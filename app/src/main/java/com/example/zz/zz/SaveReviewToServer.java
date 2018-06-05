@@ -12,5 +12,5 @@ import retrofit2.http.Query;
 
 public interface SaveReviewToServer {
     @POST("saveReview")
-    Call<SaveReview> saveReview(@Query("Review") String str);
+    Call<Void> saveReview(@Query("Review") String str);
 }

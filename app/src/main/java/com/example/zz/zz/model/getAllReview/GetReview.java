@@ -44,6 +44,7 @@ public class GetReview {
     @SerializedName("status")
     @Expose
     private Integer status;
+    private Integer idSpecUser;
 
     public Integer getIdReview() {
         return idReview;
@@ -149,4 +150,11 @@ public class GetReview {
         this.status = status;
     }
 
+    public void setIdSpecUser(Integer idSpecUser) {
+        this.idSpecUser = idSpecUser;
+    }
+
+    public Integer getIdSpecUser() {
+        return idSpecUser;
+    }
 }

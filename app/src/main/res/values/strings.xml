@@ -6,6 +6,7 @@
     <string name="fb_login_protocol_scheme">fb688418164882551</string>
     <string name="openDrwm">Open</string>
     <string name="closeDrwm">Close</string>
+    <string name="cancel">Отмена</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="LK_fragment_header">Личный кабинет</string>

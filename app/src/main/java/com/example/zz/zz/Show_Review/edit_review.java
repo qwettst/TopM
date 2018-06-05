@@ -102,8 +102,7 @@ public class edit_review extends Fragment implements DataSendFragment {
 
             case R.id.action_send: {
                 SaveModReview svReview=new SaveModReview();
-                if(etName.getText().toString().length()!=0 && etFname.getText().toString().length()!=0 && etRev.getText().toString().length()!=0 && etCity.getText().toString().length()!=0 && etOtch.getText().toString().length()!=0)
-                {
+
                     User u=new User();
                     u.setIdUser(ardMod.getUser().getIdUser());
                     svReview.setIdReview(ardMod.getIdReview());
@@ -121,9 +120,6 @@ public class edit_review extends Fragment implements DataSendFragment {
                         svReview.setOnCall(1);
                     else
                         svReview.setOnCall(0);
-
-
-
 
                     HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
 
@@ -155,19 +151,20 @@ public class edit_review extends Fragment implements DataSendFragment {
 
 
 
-                    final Call<SaveModReview> call = publishReview.publishreview(jsonString);
+                    final Call<Void> call = publishReview.publishreview(jsonString);
 
 
-                    call.enqueue(new Callback<SaveModReview>() {
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void onResponse(Call<SaveModReview> call, Response<SaveModReview> response) {
+                        public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.isSuccessful()) {
+                            } else {
+                                Log.d("TAG", "response code " + response.code());
+                            }
+
+                            if (response.code()==200){
+                                Toast.makeText(getContext(),"Отзыв опубликован",Toast.LENGTH_LONG).show();
                                 Log.d("TAG", "response " + response.body());
-                                Bundle bundle=new Bundle();
-
-                                bundle.putString("mSign","G+");
-                                bundle.putInt("uID", 5);
-
                                 Class fragmentClass;
                                 fragmentClass=myReview.class;
                                 try {
@@ -175,29 +172,21 @@ public class edit_review extends Fragment implements DataSendFragment {
                                     myFragment.setArguments(bundle);
                                     FragmentManager fragmentManager = getFragmentManager();
                                     View view = getActivity().getCurrentFocus();
-                                    if (view != null) {
-                                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                                    }
                                     fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
                                 } catch (java.lang.InstantiationException e) {
                                     e.printStackTrace();
                                 } catch (IllegalAccessException e) {
                                     e.printStackTrace();
                                 }
-                            } else {
-                                Log.d("TAG", "response code " + response.code());
                             }
                         }
                         @Override
-                        public void onFailure(Call<SaveModReview> call, Throwable t) {
+                        public void onFailure(Call<Void> call, Throwable t) {
                             Log.d("Tag","failure " + t);
+                            Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
                         }
                     });
 
-                }
-                else
-                    Toast.makeText(getContext(),"Поля не заполнены",Toast.LENGTH_LONG).show();
                 break;
             }
         }
@@ -208,6 +197,7 @@ public class edit_review extends Fragment implements DataSendFragment {
     private EditText etName, etFname,etOtch, etSpec, etCity, etStreet, etRev;
     private CheckBox chOnCallYes,chOnCallNo;
     private AllReviewData ardMod;
+    private Bundle bundle;
 
 
     @Override
@@ -226,6 +216,8 @@ public class edit_review extends Fragment implements DataSendFragment {
                 false);
 
         ImageView ivBackground;
+
+        bundle = this.getArguments();
 
         ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
         ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);

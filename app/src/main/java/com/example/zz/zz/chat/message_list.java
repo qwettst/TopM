@@ -114,7 +114,8 @@ public class message_list extends Fragment {
             messeageRecyclerView.setLayoutManager(mLayoutManager);
 
 
-            myRef = FirebaseDatabase.getInstance().getReference();
+            myRef = FirebaseDatabase.getInstance().getReference().child(bundle.getString("childArg"));
+
             messageListAdapter = new MessageListAdapter(chatMessageList, uDB.getFirstname() + " " + uDB.getLastname());
             messeageRecyclerView.setAdapter(messageListAdapter);
 
@@ -162,7 +163,6 @@ public class message_list extends Fragment {
                 sendMessage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        FirebaseUser sender = FirebaseAuth.getInstance().getCurrentUser();
                         if (etMessage.getText().length() != 0 && uDB != null) {
 
                             ChatMessage chatMessage = new ChatMessage(etMessage.getText().toString(), uDB.getFirstname() + " " + uDB.getLastname());

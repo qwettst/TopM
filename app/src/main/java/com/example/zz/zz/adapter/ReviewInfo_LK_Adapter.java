@@ -1,12 +1,19 @@
 package com.example.zz.zz.adapter;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.R;
+import com.example.zz.zz.Show_Review.MainReview;
+import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.getAllReview.GetReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
 
@@ -22,22 +29,76 @@ import java.util.List;
 public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Adapter.MyViewHolder> {
 
     private List<GetReview> getReviewList;
+    private DataSendFragment dataFromActivityToFragment;
+    private FragmentManager mFragment;
+    Bundle bundle;
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView author,review,date;
 
         public MyViewHolder(View view) {
             super(view);
+
             author = (TextView) view.findViewById(R.id.inforev_author);
             review = (TextView) view.findViewById(R.id.inforev_review);
             date = (TextView) view.findViewById(R.id.inforev_date);
 
         }
+        @Override
+        public void onClick(View view) {
+            view.setOnClickListener(this);
+            int position = getLayoutPosition();
+            GetReview getReview = getReviewList.get(position);
+            final AllReviewData allReviewData = new AllReviewData();
+            allReviewData.setIdReview(getReview.getIdReview());
+            allReviewData.setUser(getReview.getUser());
+            allReviewData.setSurname(getReview.getSurname());
+            allReviewData.setName(getReview.getName());
+            allReviewData.setOtchestvo(getReview.getOtchestvo());
+            allReviewData.setCity(getReview.getCity());
+            allReviewData.setAddress(getReview.getAddress());
+            allReviewData.setDatetime(getReview.getDatetime());
+            allReviewData.setContent(getReview.getContent());
+            allReviewData.setSpec(getReview.getSpecName());
+            allReviewData.setReviewsParameters(getReview.getReviewsParameters());
+            allReviewData.setStatus(getReview.getStatus());
+            allReviewData.setIdSpecUser(getReview.getUser().getIdUser());
+
+            Class fragmentClass;
+            fragmentClass=MainReview.class;
+            Fragment myFragment=null;
+
+            try {
+                myFragment=(Fragment)fragmentClass.newInstance();
+                myFragment.setArguments(bundle);
+                final Handler handler = new Handler();
+
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        dataFromActivityToFragment.sendData(allReviewData);
+                    }
+                };
+                dataFromActivityToFragment = (DataSendFragment) myFragment;
+                mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+
+
+                handler.postDelayed(r, 0);
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+
+
+        }
     }
 
-    public ReviewInfo_LK_Adapter(List<GetReview> getReviewList) {
+    public ReviewInfo_LK_Adapter(List<GetReview> getReviewList, FragmentManager fragment, Bundle bundle) {
         this.getReviewList = getReviewList;
+        mFragment  = fragment;
+        this.bundle=bundle;
     }
 
     @Override

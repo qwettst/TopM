@@ -1,5 +1,8 @@
 package com.example.zz.zz.Show_Review;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,10 +15,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -42,6 +48,7 @@ import com.example.zz.zz.model.getAllReview.GetReview;
  * create an instance of this fragment.
  */
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import retrofit2.Call;
@@ -133,7 +140,6 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         chN=getActivity().findViewById(R.id.checkBoxN);
         chY.setOnClickListener(this);
         chN.setOnClickListener(this);
-        chN.setChecked(true);
 
 
 
@@ -247,18 +253,19 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         mListener = null;
     }
 
-    @Override
+
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.s_start:
                 final SearchReview searchReview = new SearchReview();
 
                 RatingBar rb=getActivity().findViewById(R.id.s_rate);
-                TextView tvName=getActivity().findViewById(R.id.s_name);
-                TextView tvDatetime=getActivity().findViewById(R.id.s_daterev);
-                TextView tvSpec=getActivity().findViewById(R.id.s_spec);
-                TextView tvCity=getActivity().findViewById(R.id.s_city);
-                TextView tvAdress=getActivity().findViewById(R.id.s_street);
+                EditText etName=getActivity().findViewById(R.id.s_name);
+                EditText etSpec=getActivity().findViewById(R.id.s_spec);
+                EditText etCity=getActivity().findViewById(R.id.s_city);
+                EditText etAdress=getActivity().findViewById(R.id.s_street);
+                EditText etDatetime=getActivity().findViewById(R.id.s_daterev);
+
 
                 if(chY.isChecked())
                     searchReview.setOnCall(1);
@@ -268,12 +275,12 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
                     else
                         searchReview.setOnCall(3);
 
-                searchReview.setName(tvName.getText().toString());
-                searchReview.setDatetime(tvDatetime.getText().toString());
-                searchReview.setCity(tvCity.getText().toString());
-                searchReview.setAdress(tvAdress.getText().toString());
+                searchReview.setName(etName.getText().toString());
+                searchReview.setDatetime(etDatetime.getText().toString());
+                searchReview.setCity(etCity.getText().toString());
+                searchReview.setAdress(etAdress.getText().toString());
                 searchReview.setRate(rb.getRating());
-                searchReview.setSpec(tvSpec.getText().toString());
+                searchReview.setSpec(etSpec.getText().toString());
 
                 Class fragmentClass;
                 fragmentClass = SearchReview_fragment.class;
@@ -326,7 +333,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         FragmentManager fragmentManager = getFragmentManager();
         rvReviewView.setLayoutManager(mLayoutManager);
         rvReviewView.setItemAnimator(new DefaultItemAnimator());
-        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager);
+        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager,bundle);
         rvReviewView.setAdapter(searchGetAllReview_adapter);
     }
 

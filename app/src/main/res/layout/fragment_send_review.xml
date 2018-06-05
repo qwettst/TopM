@@ -18,7 +18,8 @@
             android:layout_height="wrap_content"
             android:hint="Имя"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:maxLength="20"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -34,7 +35,8 @@
             android:layout_below="@+id/send_name"
             android:hint="Фамилия"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:maxLength="20"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -50,7 +52,8 @@
             android:layout_below="@+id/send_first_name"
             android:hint="Отчество"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:maxLength="20"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -65,7 +68,8 @@
             android:layout_below="@+id/send_otchestvo"
             android:hint="Профессия"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:maxLength="20"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -80,7 +84,8 @@
             android:layout_below="@+id/send_spec"
             android:hint="Город"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:maxLength="20"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -95,7 +100,8 @@
             android:layout_below="@+id/send_city"
             android:hint="Улица, номера дома"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:maxLength="20"/>
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -110,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/send_street"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="bold" />
 
         <CheckBox
             android:id="@+id/onCallYes"
@@ -146,7 +152,8 @@
             android:layout_below="@+id/onCall"
             android:ems="10"
             android:hint="Текст Отзыва"
-            android:inputType="textMultiLine"/>
+            android:inputType="textMultiLine"
+            android:maxLength="160"/>
 
 
         <RatingBar

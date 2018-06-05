@@ -39,6 +39,8 @@ public class AllReviewData {
 
     private List<ReviewsParameter> reviewsParameters = null;
 
+    private Integer idSpecUser;
+
 
 
     public void setUser(User user) {
@@ -138,5 +140,13 @@ public class AllReviewData {
 
     public int getStatus() {
         return status;
+    }
+
+    public void setIdSpecUser(Integer idSpecUser) {
+        this.idSpecUser = idSpecUser;
+    }
+
+    public Integer getIdSpecUser() {
+        return idSpecUser;
     }
 }

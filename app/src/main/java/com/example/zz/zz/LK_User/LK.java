@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,6 +31,8 @@ import com.example.zz.zz.SpecUserGetter;
 import com.example.zz.zz.adapter.ReviewInfo_LK_Adapter;
 import com.example.zz.zz.model.getAllReview.GetReview;
 import com.example.zz.zz.model.getSpecUser.GetSpecUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +89,7 @@ public class LK extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
+        inflater.inflate(R.menu.toolbar_menu_lkspec, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -103,6 +108,9 @@ public class LK extends Fragment {
     private ProgressBar pbTask;
     private int iUid;
     private List<GetReview> getReviewList = new ArrayList<>();
+    private Bundle bundle;
+    private String sNameSpec;
+    private DatabaseReference myRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -113,7 +121,7 @@ public class LK extends Fragment {
         getActivity().setTitle("Личный кабинет");
         ImageView ivBackground;
 
-        Bundle bundle = this.getArguments();
+        bundle = this.getArguments();
 
         iUid= bundle.getInt("uID");
 
@@ -149,7 +157,8 @@ public class LK extends Fragment {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.revinfo_recycler_view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
-        ReviewInfo_LK_Adapter = new ReviewInfo_LK_Adapter(getReviewList);
+        FragmentManager fragmentManager = getFragmentManager();
+        ReviewInfo_LK_Adapter = new ReviewInfo_LK_Adapter(getReviewList,fragmentManager,bundle);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(ReviewInfo_LK_Adapter);
 
@@ -172,14 +181,15 @@ public class LK extends Fragment {
             public void onResponse(Call<GetSpecUser> call, Response<GetSpecUser> response) {
                 if (response.isSuccessful()) {
                     Log.d("TAG","response " + response.body());
-                    tvName.setText(response.body().getName()+" "+response.body().getSurname()+" "+response.body().getOtchestvo());
+                    sNameSpec=response.body().getName()+" "+response.body().getSurname()+" "+response.body().getOtchestvo();
+                    tvName.setText(sNameSpec);
                     tvSpec.setText(response.body().getSpecName());
                     tvAb.setText(response.body().getInfo());
                     tvAdress.setText(response.body().getAddress());
                     tvCity.setText(response.body().getCity());
                     getReviewList.addAll(response.body().getReviews());
-                    ReviewInfo_LK_Adapter.notifyDataSetChanged();
 
+                    ReviewInfo_LK_Adapter.notifyDataSetChanged();
                     rbRate.setRating(ReviewInfo_LK_Adapter.getRateSpec());
                     tv7.setText(String.valueOf(ReviewInfo_LK_Adapter.getItemCount()));
                     updateUI(1);
@@ -204,7 +214,19 @@ public class LK extends Fragment {
         return rootView;
     }
 
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.lk_sendMes:
+            {
+                bundle.putString("childArg",sNameSpec);
+                myRef = FirebaseDatabase.getInstance().getReference();
+                myRef.child("1").child(sNameSpec).setValue(1);
+                break;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
 

@@ -12,5 +12,5 @@ import retrofit2.http.Query;
 
 public interface PublishReview {
     @POST("publishReview")
-    Call<SaveModReview> publishreview(@Query("Review") String str);
+    Call<Void> publishreview(@Query("Review") String str);
 }

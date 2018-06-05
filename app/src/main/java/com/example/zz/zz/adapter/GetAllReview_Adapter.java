@@ -31,13 +31,13 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
     private List<GetReview> getReviewList;
     private FragmentManager mFragment;
     private DataSendFragment dataFromActivityToFragment;
-    private int idSpec;
+    Bundle bundle;
 
 
-    public GetAllReview_Adapter(List<GetReview> getReviewList, FragmentManager fragment, int idSpec) {
+    public GetAllReview_Adapter(List<GetReview> getReviewList, FragmentManager fragment, Bundle bundle) {
         this.getReviewList = getReviewList;
         mFragment  = fragment;
-        this.idSpec=idSpec;
+        this.bundle=bundle;
     }
 
 
@@ -73,12 +73,11 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
             allReviewData.setSpec(getReview.getSpecName());
             allReviewData.setReviewsParameters(getReview.getReviewsParameters());
             allReviewData.setStatus(getReview.getStatus());
+            allReviewData.setIdSpecUser(getReview.getIdSpecUser());
 
             Class fragmentClass;
             fragmentClass=MainReview.class;
             Fragment myFragment=null;
-            Bundle bundle =new Bundle();
-            bundle.putInt("uID", idSpec);
 
             try {
                 myFragment=(Fragment)fragmentClass.newInstance();

@@ -3,4 +3,7 @@
     <item android:id="@+id/rev_edit"
         android:title="Редактировать"
         />
+    <item android:id="@+id/rev_del"
+        android:title="Удалить"
+        />
 </menu>

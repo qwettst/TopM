@@ -43,6 +43,10 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
 
             int position = getLayoutPosition();
             ChatListInfo chatListInfo = chatListInfoList.get(position);
+            if(chatListInfo.getSender().equals("Общий чат"))
+                bundle.putString("childArg","public_chat");
+            else
+                bundle.putString("childArg",chatListInfo.getSender());
 
             Class fragmentClass;
             fragmentClass=message_list.class;

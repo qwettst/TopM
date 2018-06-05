@@ -145,7 +145,7 @@ public class allReview extends Fragment  implements View.OnClickListener{
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();
-        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager,bundle.getInt("uID"));
+        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager,bundle);
         rvReviewView.setLayoutManager(mLayoutManager);
         rvReviewView.setItemAnimator(new DefaultItemAnimator());
         rvReviewView.setAdapter(getAllReviewAdapter);

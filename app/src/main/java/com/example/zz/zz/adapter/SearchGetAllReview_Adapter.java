@@ -1,5 +1,6 @@
 package com.example.zz.zz.adapter;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -32,11 +33,13 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
     private DataSendFragment dataFromActivityToFragment;
     private SearchReview searchReview;
     private int i_posremove =0;
+    private Bundle bundle;
 
-    public SearchGetAllReview_Adapter(List<GetReview> getReviewList,SearchReview searchReview, FragmentManager fragment) {
+    public SearchGetAllReview_Adapter(List<GetReview> getReviewList,SearchReview searchReview, FragmentManager fragment, Bundle bundle) {
         this.getReviewList = getReviewList;
         mFragment  = fragment;
         this.searchReview=searchReview;
+        this.bundle=bundle;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -71,6 +74,7 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
             allReviewData.setSpec(getReview.getSpecName());
             allReviewData.setReviewsParameters(getReview.getReviewsParameters());
             allReviewData.setStatus(getReview.getStatus());
+            allReviewData.setIdSpecUser(getReview.getIdSpecUser());
 
             Class fragmentClass;
             fragmentClass=MainReview.class;
@@ -78,6 +82,7 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
 
             try {
                 myFragment=(Fragment)fragmentClass.newInstance();
+                myFragment.setArguments(bundle);
                 final Handler handler = new Handler();
 
                 final Runnable r = new Runnable() {
@@ -89,7 +94,7 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
                 mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
 
 
-                handler.postDelayed(r, 10);
+                handler.postDelayed(r, 0);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
@@ -132,35 +137,26 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
         holder.street.setText(getReview.getAddress());
         holder.date.setText(getReview.getDatetime());
         holder.rate.setRating(rateReview);
-        if(s_name.contains(searchReview.getName())) {
-            if (getReview.getCity().contains(searchReview.getCity())) {
-                if (getReview.getAddress().contains(searchReview.getAdress())) {
-                    if (getReview.getSpecName().contains(searchReview.getSpec())) ;
+        if(!s_name.toLowerCase().contains(searchReview.getName().toLowerCase()) && fl!=1) {
+            removeItem(position - i_posremove);
+            fl = 1;
+            i_posremove++;}
 
-                    else {
-                        removeItem(position - i_posremove);
-                        fl = 1;
-                        i_posremove++;
-                    }
-                }
-                else{
-                        removeItem(position - i_posremove);
-                        fl = 1;
-                        i_posremove++;
-                    }
-            }
-            else {
-                removeItem(position-i_posremove);
-                fl=1;
-                i_posremove++;
-            }
-        }
-        else {
-            removeItem(position-i_posremove);
-            fl=1;
+        if (!getReview.getCity().toLowerCase().contains(searchReview.getCity().toLowerCase())&& fl!=1) {
+            removeItem(position - i_posremove);
+            fl = 1;
             i_posremove++;
         }
-
+        if (!getReview.getAddress().toLowerCase().contains(searchReview.getAdress().toLowerCase())&& fl!=1) {
+            removeItem(position - i_posremove);
+            fl = 1;
+            i_posremove++;
+        }
+        if (!getReview.getSpecName().toLowerCase().contains(searchReview.getSpec().toLowerCase())&& fl!=1) {
+            removeItem(position - i_posremove);
+            fl = 1;
+            i_posremove++;
+        }
         if(searchReview.getOnCall()!=getReview.getOnCall() && fl!=1)
             if(searchReview.getOnCall()!=3 && fl!=1)
             {
@@ -173,6 +169,11 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
             removeItem(position - i_posremove);
             i_posremove++;
         }
+        if(!getReview.getDatetime().contains(searchReview.getDatetime()) & fl!=1) {
+            removeItem(position - i_posremove);
+            i_posremove++;
+        }
+    
     }
 
 

@@ -1,8 +1,11 @@
 package com.example.zz.zz;
 
 
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -52,8 +56,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -84,6 +91,7 @@ public class MainUser extends AppCompatActivity {
     private DatabaseUserProfileHelper db;
 
     private Button bSearch;
+    private EditText etDatetime;
 
 
 
@@ -126,6 +134,41 @@ public class MainUser extends AppCompatActivity {
            checkAuth(fragmentClass,sAuth);
         else
             getMeInfo(fragmentClass);
+
+        etDatetime=findViewById(R.id.s_daterev);
+        final Calendar myCalendar = Calendar.getInstance();
+
+
+
+        etDatetime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog=new DatePickerDialog(MainUser.this, new DatePickerDialog.OnDateSetListener() {
+
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                          int dayOfMonth) {
+                        myCalendar.set(Calendar.YEAR, year);
+                        myCalendar.set(Calendar.MONTH, monthOfYear);
+                        myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        String myFormat = "dd-MM-yyyy"; //In which you need put here
+                        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                        etDatetime.setText(sdf.format(myCalendar.getTime()));
+                    }
+                }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+
+                datePickerDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        etDatetime.setText("");
+                    }
+                });
+
+                datePickerDialog.show();
+            }
+        });
+
 
     }
 
@@ -378,7 +421,7 @@ public class MainUser extends AppCompatActivity {
                         nvDrawer.getMenu().clear();
                         nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
                         List<UserProfile_DB> gh=db.getAllUserrs();
-                        if(response.body().getIdUser()==5)
+                        if(response.body().getAccess().getIdAccess()==3)
                         {
                             nvDrawer.getMenu().clear();
                             nvDrawer.inflateMenu(R.menu.drawermenu_mod);
@@ -436,11 +479,6 @@ public class MainUser extends AppCompatActivity {
                     db.updateUser(uDB,response.body().getIdUser());
                     nvDrawer.getMenu().clear();
                     nvDrawer.inflateMenu(R.menu.drawermenu);
-                    if(iUid==5)
-                    {
-                        nvDrawer.getMenu().clear();
-                        nvDrawer.inflateMenu(R.menu.drawermenu_mod);
-                    }
                 } else {
                     Log.d("TAG","response code " + response.code());
                 }

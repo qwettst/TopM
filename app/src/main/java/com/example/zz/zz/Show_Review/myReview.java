@@ -90,6 +90,7 @@ public class myReview extends Fragment  implements View.OnClickListener{
     private ProgressBar pbTask;
     private CheckBox chY,chN;
     private Button bSearch;
+    private Bundle bundle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -98,6 +99,8 @@ public class myReview extends Fragment  implements View.OnClickListener{
         View rootView = inflater.inflate(R.layout.fragment_all_review, container,
                 false);
         getActivity().setTitle("Модерация");
+
+        bundle = this.getArguments();
 
         ImageView ivBackground;
 
@@ -125,49 +128,21 @@ public class myReview extends Fragment  implements View.OnClickListener{
         rvReviewView = (RecyclerView) rootView.findViewById(R.id.all_review_recyler);
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
-        final Bundle bundle = this.getArguments();
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();
-        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager,bundle.getInt("uID"));
+        getAllReviewAdapter = new GetAllReview_Adapter(reviewInfo,fragmentManager,bundle);
         rvReviewView.setLayoutManager(mLayoutManager);
         rvReviewView.setItemAnimator(new DefaultItemAnimator());
         rvReviewView.setAdapter(getAllReviewAdapter);
 
 
 
-        String strSign= bundle.getString("mSign");
-        if(!strSign.equals("guest")) {
-            FloatingActionButton fab = rootView.findViewById(R.id.fab);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    getActivity().findViewById(R.id.search_form).setVisibility(View.GONE);
-                    Bundle bSReview =new Bundle();
-                    if(bundle.getInt("uID")!=-1) {
-                        bSReview.putString("mSign",bundle.getString("mSign"));
-                        bSReview.putInt("uId", bundle.getInt("uID"));
-                        Class fragmentClass;
-                        fragmentClass = SendReview.class;
-                        try {
-                            Fragment myFragment = (Fragment) fragmentClass.newInstance();
-                            myFragment.setArguments(bSReview);
-                            FragmentManager fragmentManager = getFragmentManager();
-                            fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                        } catch (java.lang.InstantiationException e) {
-                            e.printStackTrace();
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            FloatingActionButton fab = rootView.findViewById(R.id.fab);
-            fab.setVisibility(View.GONE);
-        }
+
+        FloatingActionButton fab = rootView.findViewById(R.id.fab);
+        fab.setVisibility(View.GONE);
+
 
         pbTask.setVisibility(View.VISIBLE);
         rvReviewView.setVisibility(View.GONE);

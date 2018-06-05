@@ -89,21 +89,22 @@
             android:layout_toEndOf="@+id/textView0"
             android:text="Электрик"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/UCity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView0"
-            android:layout_marginStart="13dp"
-            android:layout_toEndOf="@+id/textView4"
+            android:layout_above="@+id/UStreet"
+            android:layout_alignStart="@+id/UStreet"
             android:text="Томск"
             android:textSize="16sp" />
+
         <TextView
             android:id="@+id/UStreet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/UCity"
-            android:layout_toEndOf="@+id/uAb"
+            android:layout_above="@+id/uAb_tv"
+            android:layout_toEndOf="@+id/uAb_tv"
             android:text="ул.Пушкина, 77"
             android:textSize="16sp" />
         <RatingBar
@@ -131,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/textView8"
             android:layout_centerVertical="true"
-            android:text="Отызвы:"
+            android:text="Отзывы:"
             android:layout_marginTop="2dp"
             android:layout_below="@+id/countRev"
             android:textSize="16sp"/>

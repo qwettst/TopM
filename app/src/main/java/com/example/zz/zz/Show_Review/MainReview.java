@@ -23,12 +23,14 @@ import com.example.zz.zz.AddReviewToLK;
 import com.example.zz.zz.BuildConfig;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.LK_User.LK;
+import com.example.zz.zz.LoginUser;
 import com.example.zz.zz.R;
-import com.example.zz.zz.database.DatabaseUserProfileHelper;
+import com.example.zz.zz.ReviewDelete;
 import com.example.zz.zz.model.AddSpecUserReview;
 import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
+import com.example.zz.zz.model.getAllReview.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -90,36 +92,95 @@ public class MainReview extends Fragment implements DataSendFragment {
             if (ardMod.getStatus() == 0)
                 inflater.inflate(R.menu.toolbar_menu_review_settings, menu);
             else
-                if(bundle.getInt("uID")!=-1)
-                    inflater.inflate(R.menu.toolbar_menu_review_user, menu);
+                if(bundle.getInt("uID")!=-1) {
+                    if (ardMod.getIdSpecUser() != null)
+                        inflater.inflate(R.menu.toolbar_menu_review_user_withspec, menu);
+                    else
+                        inflater.inflate(R.menu.toolbar_menu_review_user_nonspec, menu);
+                }
         }
         else
             if(bundle.getInt("uID")!=-1)
-                inflater.inflate(R.menu.toolbar_menu_review_user, menu);
+                inflater.inflate(R.menu.toolbar_menu_review_user_nonspec, menu);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
         switch (item.getItemId()) {
+
+            case R.id.rev_del:
+            {
+                Retrofit rfti = new Retrofit.Builder()
+                        .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(okClient)
+                        .build();
+                ReviewDelete reviewDelete=rfti.create(ReviewDelete.class);
+
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonString = null;
+                try {
+                    jsonString = mapper.writeValueAsString(ardMod.getIdReview());
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("json " + jsonString);
+
+                final Call<Void> call = reviewDelete.deleteReview(jsonString);
+
+
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+
+                        } else {
+                            Log.d("TAG","response code " + response.code());
+
+                        }
+                        if (response.code()==200) {
+                            Toast.makeText(getContext(), "Отзыв удален", Toast.LENGTH_LONG).show();
+                            openModReview();
+                        }
+
+                    }
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.d("Tag","failure " + t);
+
+                        Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+                break;
+            }
 
             case R.id.rev_edit:
                 {
-                    DatabaseUserProfileHelper db;
-                    db=new DatabaseUserProfileHelper(getContext());
-                        if(db.getUserById(5)!=null){
+                    Class fragmentClass;
+                    fragmentClass=edit_review.class;
+                    Fragment myFragment=null;
+                    FragmentManager mFragment=getActivity().getSupportFragmentManager();
+                    try {
+                        myFragment=(Fragment)fragmentClass.newInstance();
+                        myFragment.setArguments(bundle);
+                        final Handler handler = new Handler();
 
-                            Class fragmentClass;
-                            fragmentClass=edit_review.class;
-                            Fragment myFragment=null;
-                            FragmentManager mFragment=getActivity().getSupportFragmentManager();
-                            try {
-                                myFragment=(Fragment)fragmentClass.newInstance();
-                                final Handler handler = new Handler();
-
-                                final Runnable r = new Runnable() {
-                                    public void run() {
-                                        dataSendFragment.sendData(ardMod);
+                        final Runnable r = new Runnable() {
+                                    public void run() {dataSendFragment.sendData(ardMod);
                                     }
                                 };
                                 dataSendFragment = (DataSendFragment) myFragment;
@@ -127,30 +188,18 @@ public class MainReview extends Fragment implements DataSendFragment {
                                 mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
 
 
-                                handler.postDelayed(r, 0);
+                        handler.postDelayed(r, 0);
 
-                            } catch (java.lang.InstantiationException e) {
+                    } catch (java.lang.InstantiationException e) {
                                 e.printStackTrace();
-                            } catch (IllegalAccessException e) {
+                    } catch (IllegalAccessException e) {
                                 e.printStackTrace();
-                            }
-
-                        }
-                        break;
+                    }
+                    break;
                 }
 
             case R.id.rev_addReview:
             {
-                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-
-                if(BuildConfig.DEBUG){
-                    loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
-                }
-
-                OkHttpClient okClient = new OkHttpClient.Builder()
-                        .addInterceptor(loggingInterceptor)
-                        .build();
-
                 Retrofit rfti = new Retrofit.Builder()
                         .baseUrl("http://94.251.14.36:8080/TopMaster/")
                         .addConverterFactory(GsonConverterFactory.create())
@@ -186,20 +235,19 @@ public class MainReview extends Fragment implements DataSendFragment {
 
                         }
                         if (response.code()==200)
-                            Toast.makeText(getContext(),"Добавлено",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(),"Отзыв добавлен в ЛК",Toast.LENGTH_LONG).show();
 
                     }
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
                         Log.d("Tag","failure " + t);
-
                         Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
                     }
                 });
                 break;
             }
             case R.id.rev_showLK:{
-                bundle.putInt("uID",ardMod.getUser().getIdUser());
+                bundle.putInt("uID",ardMod.getIdSpecUser());
                 Class fragmentClass;
                 fragmentClass=LK.class;
                 Fragment myFragment=null;
@@ -323,6 +371,26 @@ public class MainReview extends Fragment implements DataSendFragment {
         }
     }
 
+    private void openModReview(){
+        Bundle bSReview=new Bundle();
+        bSReview.putString("mSign","mSign");
+        bSReview.putInt("uID", bundle.getInt("uID"));
+
+        Class fragmentClass;
+        fragmentClass=myReview.class;
+        try {
+            Fragment myFragment=(Fragment)fragmentClass.newInstance();
+            FragmentManager fragmentManager = getFragmentManager();
+            myFragment.setArguments(bSReview);
+            View view = getActivity().getCurrentFocus();
+            fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+        } catch (java.lang.InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void sendSearchData(SearchReview data) {
@@ -333,6 +401,63 @@ public class MainReview extends Fragment implements DataSendFragment {
     @Override
     public void onClick(View view) {
 
+    }
+
+    private void checkMod(){
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
+        Retrofit rftiUser = new Retrofit.Builder()
+                .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okClient)
+                .build();
+
+        User uLogin=new User();
+
+
+        LoginUser loginUser = rftiUser.create(LoginUser.class);
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = mapper.writeValueAsString(uLogin);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println("json " + jsonString);
+
+
+
+        final Call<User> call = loginUser.createUser(jsonString);
+
+
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                if (response.isSuccessful()) {
+                    if(response.body().getAccess().getIdAccess()==3){
+
+                    }
+
+                } else {
+                    Log.d("TAG","response code " + response.code());
+                }
+            }
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                Log.d("Tag","failure " + t);
+                Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 

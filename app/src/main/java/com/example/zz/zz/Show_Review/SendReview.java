@@ -20,6 +20,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.BuildConfig;
@@ -104,39 +105,38 @@ public class SendReview extends Fragment {
         switch (item.getItemId()) {
 
             case R.id.action_send: {
-                SaveReview svReview=new SaveReview();
-                if(etRev.getText().toString().length()!=0)
-                {
-                    User u=new User();
+                if(etName.getText().length()!=0) {
+                    SaveReview svReview = new SaveReview();
+                    User u = new User();
                     u.setIdUser(iUID);
 
                     svReview.setUser(u);
                     svReview.setName(etName.getText().toString());
                     svReview.setSurname(etFname.getText().toString());
-                    svReview.setOtchestvo( etOtch.getText().toString());
+                    svReview.setOtchestvo(etOtch.getText().toString());
                     svReview.setCity(etCity.getText().toString());
                     svReview.setAddress(etStreet.getText().toString());
                     svReview.setContent(etRev.getText().toString());
                     svReview.setSpecName(etSpec.getText().toString());
 
-                    if(chOnCallYes.isChecked())
+                    if (chOnCallYes.isChecked())
                         svReview.setOnCall(1);
                     else
                         svReview.setOnCall(0);
 
-                    List<ParametrRate> rateReviewList=new ArrayList<>();
-                    ParametrRate rvParam=new ParametrRate();
+                    List<ParametrRate> rateReviewList = new ArrayList<>();
+                    ParametrRate rvParam = new ParametrRate();
                     rvParam.setValue(rbQuality.getRating());
                     rvParam.setParameterName("Качество услуг");
                     rateReviewList.add(rvParam);
 
-                    rvParam=new ParametrRate();
-                    rvParam.setValue( rbCommunctn.getRating());
+                    rvParam = new ParametrRate();
+                    rvParam.setValue(rbCommunctn.getRating());
                     rvParam.setParameterName("Коммуникация");
                     rateReviewList.add(rvParam);
 
-                    rvParam=new ParametrRate();
-                    rvParam.setValue( rbKonflict.getRating());
+                    rvParam = new ParametrRate();
+                    rvParam.setValue(5-rbKonflict.getRating());
                     rvParam.setParameterName("Конфликтность");
                     rateReviewList.add(rvParam);
 
@@ -145,8 +145,8 @@ public class SendReview extends Fragment {
 
                     HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
 
-                    if(BuildConfig.DEBUG){
-                        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+                    if (BuildConfig.DEBUG) {
+                        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                     }
 
                     OkHttpClient okClient = new OkHttpClient.Builder()
@@ -172,47 +172,46 @@ public class SendReview extends Fragment {
                     System.out.println("json " + jsonString);
 
 
+                    final Call<Void> call = reviewToServer.saveReview(jsonString);
 
-                    final Call<SaveReview> call = reviewToServer.saveReview(jsonString);
 
-
-                    call.enqueue(new Callback<SaveReview>() {
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void onResponse(Call<SaveReview> call, Response<SaveReview> response) {
+                        public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.isSuccessful()) {
                                 Log.d("TAG", "response " + response.body());
                             } else {
                                 Log.d("TAG", "response code " + response.code());
                             }
+                            if (response.code() == 200) {
+                                Toast.makeText(getContext(), "Отзыв отправлен на модерацию", Toast.LENGTH_LONG).show();
+                                Class fragmentClass;
+                                fragmentClass = allReview.class;
+                                try {
+                                    Fragment myFragment = (Fragment) fragmentClass.newInstance();
+                                    FragmentManager fragmentManager = getFragmentManager();
+                                    myFragment.setArguments(bundle);
+                                    View view = getActivity().getCurrentFocus();
+                                    fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+                                } catch (java.lang.InstantiationException e) {
+                                    e.printStackTrace();
+                                } catch (IllegalAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
+
                         @Override
-                        public void onFailure(Call<SaveReview> call, Throwable t) {
-                            Log.d("Tag","failure " + t);
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.d("Tag", "failure " + t);
+                            Toast.makeText(getContext(), "Сервер не отвечает", Toast.LENGTH_LONG).show();
                         }
                     });
-
                 }
-                Bundle bSReview=new Bundle();
-                bSReview.putString("mSign",bundle.getString("mSign"));
-                bSReview.putInt("uID", bundle.getInt("uID"));
+                else
+                    Toast.makeText(getContext(), "Поле - Имя - не должно быть пустым", Toast.LENGTH_LONG).show();
 
-                Class fragmentClass;
-                fragmentClass=allReview.class;
-                try {
-                    Fragment myFragment=(Fragment)fragmentClass.newInstance();
-                    FragmentManager fragmentManager = getFragmentManager();
-                    myFragment.setArguments(bSReview);
-                    View view = getActivity().getCurrentFocus();
-                    if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    }
-                    fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                } catch (java.lang.InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+
                 break;
             }
         }

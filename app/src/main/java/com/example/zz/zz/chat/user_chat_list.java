@@ -97,7 +97,7 @@ public class user_chat_list extends Fragment {
 
 
         bundle = this.getArguments();
-        getActivity().setTitle("Общий чат");
+        getActivity().setTitle("Чаты");
 
         ImageView ivBackground;
 
