@@ -5,27 +5,19 @@ package com.example.zz.zz.model;
  */
 
 public class ChatListInfo {
-    private String sender;
-    private String mesText;
+    private ChatUsers chatUsers;
 
     public  ChatListInfo(){}
 
-    public ChatListInfo(String sender, String mesText) {
-        this.sender = sender;
-        this.mesText= mesText;
+    public ChatListInfo(ChatUsers chatUsers) {
+        this.chatUsers =chatUsers;
     }
 
-    public String getSender() {
-        return sender;
+    public void setChatUsers(ChatUsers chatUsers) {
+        this.chatUsers = chatUsers;
     }
 
-    public void setSender(String sender) {
-        this.sender = sender;
+    public ChatUsers getChatUsers() {
+        return chatUsers;
     }
-
-    public String getMesText() {
-        return mesText;
-    }
-
-    public void setMesText(String mesText) { this.mesText = mesText; }
 }

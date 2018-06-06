@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -151,7 +152,7 @@ public class MainReview extends Fragment implements DataSendFragment {
 
                         }
                         if (response.code()==200) {
-                            Toast.makeText(getContext(), "Отзыв удален", Toast.LENGTH_LONG).show();
+                            Toasty.success(getContext(), "Отзыв удален", Toast.LENGTH_LONG).show();
                             openModReview();
                         }
 
@@ -160,7 +161,7 @@ public class MainReview extends Fragment implements DataSendFragment {
                     public void onFailure(Call<Void> call, Throwable t) {
                         Log.d("Tag","failure " + t);
 
-                        Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                        Toasty.error(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -235,19 +236,19 @@ public class MainReview extends Fragment implements DataSendFragment {
 
                         }
                         if (response.code()==200)
-                            Toast.makeText(getContext(),"Отзыв добавлен в ЛК",Toast.LENGTH_LONG).show();
+                            Toasty.success(getContext(),"Отзыв добавлен в ЛК",Toast.LENGTH_LONG).show();
 
                     }
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
                         Log.d("Tag","failure " + t);
-                        Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                        Toasty.error(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
                     }
                 });
                 break;
             }
             case R.id.rev_showLK:{
-                bundle.putInt("uID",ardMod.getIdSpecUser());
+                bundle.putInt("uIDSpec",ardMod.getIdSpecUser());
                 Class fragmentClass;
                 fragmentClass=LK.class;
                 Fragment myFragment=null;
@@ -455,7 +456,7 @@ public class MainReview extends Fragment implements DataSendFragment {
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 Log.d("Tag","failure " + t);
-                Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
             }
         });
     }

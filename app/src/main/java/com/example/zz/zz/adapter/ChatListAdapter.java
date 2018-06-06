@@ -43,10 +43,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
 
             int position = getLayoutPosition();
             ChatListInfo chatListInfo = chatListInfoList.get(position);
-            if(chatListInfo.getSender().equals("Общий чат"))
+            if(chatListInfo.getChatUsers().getChatName().equals("Общий чат"))
                 bundle.putString("childArg","public_chat");
-            else
-                bundle.putString("childArg",chatListInfo.getSender());
+            else {
+                bundle.putString("childArg", chatListInfo.getChatUsers().getChatID());
+                bundle.putString("ChatSpecName", chatListInfo.getChatUsers().getChatName());
+            }
 
             Class fragmentClass;
             fragmentClass=message_list.class;
@@ -81,8 +83,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
 
         ChatListInfo chatListInfo = chatListInfoList.get(position);
-        holder.sender.setText(chatListInfo.getSender()+" ");
-        holder.mesText.setText(chatListInfo.getMesText());
+        holder.sender.setText(chatListInfo.getChatUsers().getChatName());
     }
 
 

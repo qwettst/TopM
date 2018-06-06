@@ -113,8 +113,15 @@ public class message_list extends Fragment {
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
             messeageRecyclerView.setLayoutManager(mLayoutManager);
 
+            if(bundle.getString("childArg").equals("public_chat")) {
+                myRef = FirebaseDatabase.getInstance().getReference().child(bundle.getString("childArg"));
+                getActivity().setTitle("Общий чат");
+            }
+            else {
+                myRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uDB.getEmail()).child(bundle.getString("childArg"));
+                getActivity().setTitle(bundle.getString("ChatSpecName"));
+            }
 
-            myRef = FirebaseDatabase.getInstance().getReference().child(bundle.getString("childArg"));
 
             messageListAdapter = new MessageListAdapter(chatMessageList, uDB.getFirstname() + " " + uDB.getLastname());
             messeageRecyclerView.setAdapter(messageListAdapter);
@@ -166,8 +173,16 @@ public class message_list extends Fragment {
                         if (etMessage.getText().length() != 0 && uDB != null) {
 
                             ChatMessage chatMessage = new ChatMessage(etMessage.getText().toString(), uDB.getFirstname() + " " + uDB.getLastname());
-                            myRef.push().child("Messages").
-                                    setValue(chatMessage);
+                            if(bundle.getString("childArg").equals("public_chat"))
+                                myRef.push().child("Messages").
+                                        setValue(chatMessage);
+
+                           else {
+                                FirebaseDatabase.getInstance().getReference().child("Users").child(bundle.getString("childArg")).child(uDB.getEmail()).push().child("Messages").
+                                        setValue(chatMessage);
+                                FirebaseDatabase.getInstance().getReference().child("Users").child(uDB.getEmail()).child(bundle.getString("childArg")).push().child("Messages").
+                                        setValue(chatMessage);
+                            }
                             etMessage.setText("");
                         }
                     }

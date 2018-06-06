@@ -62,6 +62,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -420,7 +421,6 @@ public class MainUser extends AppCompatActivity {
                         actToFragment(fragmentClass,1);
                         nvDrawer.getMenu().clear();
                         nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
-                        List<UserProfile_DB> gh=db.getAllUserrs();
                         if(response.body().getAccess().getIdAccess()==3)
                         {
                             nvDrawer.getMenu().clear();
@@ -436,13 +436,10 @@ public class MainUser extends AppCompatActivity {
                 public void onFailure(Call<User> call, Throwable t) {
                     Log.d("Tag","failure " + t);
                     actToFragment(fragmentClass,-1);
-                    Toast.makeText(getApplicationContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                    Toasty.error(getApplicationContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                 }
             });
 
-        List<UserProfile_DB> us=new ArrayList<UserProfile_DB>();
-        us.addAll(db.getAllUserrs());
-        us.size();
 
     }
 

@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -136,7 +137,7 @@ public class SendReview extends Fragment {
                     rateReviewList.add(rvParam);
 
                     rvParam = new ParametrRate();
-                    rvParam.setValue(5-rbKonflict.getRating());
+                    rvParam.setValue(rbKonflict.getRating());
                     rvParam.setParameterName("Конфликтность");
                     rateReviewList.add(rvParam);
 
@@ -184,7 +185,7 @@ public class SendReview extends Fragment {
                                 Log.d("TAG", "response code " + response.code());
                             }
                             if (response.code() == 200) {
-                                Toast.makeText(getContext(), "Отзыв отправлен на модерацию", Toast.LENGTH_LONG).show();
+                                Toasty.success(getContext(), "Отзыв отправлен на модерацию", Toast.LENGTH_LONG).show();
                                 Class fragmentClass;
                                 fragmentClass = allReview.class;
                                 try {
@@ -204,12 +205,12 @@ public class SendReview extends Fragment {
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Log.d("Tag", "failure " + t);
-                            Toast.makeText(getContext(), "Сервер не отвечает", Toast.LENGTH_LONG).show();
+                            Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                         }
                     });
                 }
                 else
-                    Toast.makeText(getContext(), "Поле - Имя - не должно быть пустым", Toast.LENGTH_LONG).show();
+                    Toasty.info(getContext(), "Поле - Имя - не должно быть пустым", Toast.LENGTH_LONG).show();
 
 
                 break;

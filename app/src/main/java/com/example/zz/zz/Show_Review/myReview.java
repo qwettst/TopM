@@ -36,6 +36,7 @@ import com.example.zz.zz.model.getAllReview.GetReview;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -176,7 +177,7 @@ public class myReview extends Fragment  implements View.OnClickListener{
             @Override
             public void onFailure(Call<List<GetReview>> call, Throwable t) {
                 Log.d("Tag","failure " + t);
-                Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                 pbTask.setVisibility(View.GONE);
                 rvReviewView.setVisibility(View.VISIBLE);
             }

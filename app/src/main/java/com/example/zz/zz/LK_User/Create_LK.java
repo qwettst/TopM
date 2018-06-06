@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.BuildConfig;
@@ -31,6 +32,7 @@ import com.example.zz.zz.model.saveSpecUser.SpecUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -158,6 +160,7 @@ public class Create_LK extends Fragment {
                         @Override
                         public void onFailure(Call<SpecUser> call, Throwable t) {
                             Log.d("Tag","failure " + t);
+                            Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                         }
                     });
 

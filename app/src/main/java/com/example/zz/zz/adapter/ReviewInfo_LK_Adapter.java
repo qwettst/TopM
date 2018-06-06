@@ -39,7 +39,7 @@ public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Ad
 
         public MyViewHolder(View view) {
             super(view);
-
+            view.setOnClickListener(this);
             author = (TextView) view.findViewById(R.id.inforev_author);
             review = (TextView) view.findViewById(R.id.inforev_review);
             date = (TextView) view.findViewById(R.id.inforev_date);
@@ -47,7 +47,6 @@ public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Ad
         }
         @Override
         public void onClick(View view) {
-            view.setOnClickListener(this);
             int position = getLayoutPosition();
             GetReview getReview = getReviewList.get(position);
             final AllReviewData allReviewData = new AllReviewData();

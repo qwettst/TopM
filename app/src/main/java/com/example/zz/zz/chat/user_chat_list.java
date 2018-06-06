@@ -14,11 +14,21 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.R;
 import com.example.zz.zz.adapter.ChatListAdapter;
+import com.example.zz.zz.database.DatabaseUserProfileHelper;
 import com.example.zz.zz.model.ChatListInfo;
+import com.example.zz.zz.model.ChatMessage;
+import com.example.zz.zz.model.ChatUsers;
+import com.example.zz.zz.model.UserProfile_DB;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +97,10 @@ public class user_chat_list extends Fragment {
     private RecyclerView recyclerView;
     private ChatListAdapter chatListAdapter;
     private Bundle bundle;
+    private DatabaseReference myRef;
+    private ChildEventListener mChildEventListener;
+    private DatabaseUserProfileHelper db;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -110,6 +124,12 @@ public class user_chat_list extends Fragment {
                 .into(ivBackground);
 
         recyclerView = (RecyclerView) rootView.findViewById(R.id.user_chat_list_view);
+        progressBar=(ProgressBar)rootView.findViewById(R.id.progress);
+
+        recyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+
+
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();
@@ -120,12 +140,68 @@ public class user_chat_list extends Fragment {
 
         PopulateEmployeeData();
 
+        UserProfile_DB uDB;
+        db=new DatabaseUserProfileHelper(getContext());
+        uDB=db.getUserById(bundle.getInt("uID"));
+        myRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uDB.getEmail()).child("ChatList");
+
+        if (mChildEventListener == null) {
+            mChildEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    ChatUsers chatUsers = null;
+                    for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                        chatUsers = messageSnapshot.getValue(ChatUsers.class);
+                        ChatListInfo chatListInfo = new ChatListInfo(chatUsers);
+                        chatListInfoList.add(chatListInfo);
+                    }
+
+                    recyclerView.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    chatListAdapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("Не смогли установить onDisconnect:" + databaseError.getMessage());
+
+                }
+            };
+
+            myRef.addChildEventListener(mChildEventListener);
+
+        }
+
 
         return rootView;
     }
+    @Override
+    public void  onDestroy(){
+        if(mChildEventListener!=null){
+            myRef.removeEventListener(mChildEventListener);
+            mChildEventListener=null;
+        }
+        super.onDestroy();
+    }
 
     private void PopulateEmployeeData() {
-        ChatListInfo chatListInfo = new ChatListInfo("Общий чат","");
+        ChatUsers chatUsers=new ChatUsers("Общий чат","public_chat");
+        ChatListInfo chatListInfo = new ChatListInfo(chatUsers);
         chatListInfoList.add(chatListInfo);
         chatListAdapter.notifyDataSetChanged();
     }

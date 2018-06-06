@@ -127,7 +127,7 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
         List<ReviewsParameter> reviewsParameterList=new ArrayList<>();
         reviewsParameterList.addAll(getReview.getReviewsParameters());
         if(reviewsParameterList.size()!=0)
-            rateReview=(reviewsParameterList.get(0).getValue()+reviewsParameterList.get(1).getValue()+reviewsParameterList.get(2).getValue())/3;
+            rateReview=(reviewsParameterList.get(0).getValue()+reviewsParameterList.get(1).getValue()+(5-reviewsParameterList.get(2).getValue()))/3;
 
         String s_name=getReview.getName() + " " + getReview.getSurname() + " " + getReview.getOtchestvo();
 
@@ -167,10 +167,12 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
 
         if(rateReview < searchReview.getRate() && fl!=1) {
             removeItem(position - i_posremove);
+            fl = 1;
             i_posremove++;
         }
         if(!getReview.getDatetime().contains(searchReview.getDatetime()) & fl!=1) {
             removeItem(position - i_posremove);
+            fl = 1;
             i_posremove++;
         }
     

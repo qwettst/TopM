@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -29,6 +30,11 @@ import com.example.zz.zz.ReviewGetter;
 import com.example.zz.zz.Show_Review.allReview;
 import com.example.zz.zz.SpecUserGetter;
 import com.example.zz.zz.adapter.ReviewInfo_LK_Adapter;
+import com.example.zz.zz.chat.user_chat_list;
+import com.example.zz.zz.database.DatabaseUserProfileHelper;
+import com.example.zz.zz.model.ChatMessage;
+import com.example.zz.zz.model.ChatUsers;
+import com.example.zz.zz.model.UserProfile_DB;
 import com.example.zz.zz.model.getAllReview.GetReview;
 import com.example.zz.zz.model.getSpecUser.GetSpecUser;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +43,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -109,8 +116,9 @@ public class LK extends Fragment {
     private int iUid;
     private List<GetReview> getReviewList = new ArrayList<>();
     private Bundle bundle;
-    private String sNameSpec;
+    private String sNameSpec, suIDSpec;
     private DatabaseReference myRef;
+    private DatabaseUserProfileHelper db;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,7 +131,7 @@ public class LK extends Fragment {
 
         bundle = this.getArguments();
 
-        iUid= bundle.getInt("uID");
+        iUid= bundle.getInt("uIDSpec");
 
         tvName=(TextView)rootView.findViewById(R.id.Uname);
         tvSpec=(TextView)rootView.findViewById(R.id.USpec);
@@ -188,6 +196,7 @@ public class LK extends Fragment {
                     tvAdress.setText(response.body().getAddress());
                     tvCity.setText(response.body().getCity());
                     getReviewList.addAll(response.body().getReviews());
+                    suIDSpec=response.body().getEmail();
 
                     ReviewInfo_LK_Adapter.notifyDataSetChanged();
                     rbRate.setRating(ReviewInfo_LK_Adapter.getRateSpec());
@@ -201,7 +210,7 @@ public class LK extends Fragment {
             @Override
             public void onFailure(Call<GetSpecUser> call, Throwable t) {
                 Log.d("Tag","failure " + t);
-                Toast.makeText(getContext(),"ЛК не существует",Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), "ЛК не существует", Toast.LENGTH_SHORT, true).show();
             }
         });
 
@@ -219,9 +228,34 @@ public class LK extends Fragment {
         switch (item.getItemId()) {
             case R.id.lk_sendMes:
             {
+                UserProfile_DB uDB;
+                db=new DatabaseUserProfileHelper(getContext());
+                uDB=db.getUserById(bundle.getInt("uID"));
                 bundle.putString("childArg",sNameSpec);
+                ChatUsers chatUsers = new ChatUsers();
+                chatUsers.setChatName(sNameSpec);
+                chatUsers.setChatID(suIDSpec);
                 myRef = FirebaseDatabase.getInstance().getReference();
-                myRef.child("1").child(sNameSpec).setValue(1);
+                myRef.child("Users").child(uDB.getEmail()).child("ChatList").child("OpenChats").push().
+                        setValue(chatUsers);
+
+                chatUsers.setChatName(uDB.getFirstname()+" "+uDB.getLastname());
+                chatUsers.setChatID(uDB.getEmail());
+                myRef.child("Users").child(suIDSpec).child("ChatList").child("OpenChats").push().
+                        setValue(chatUsers);
+                Class fragmentClass;
+                fragmentClass=user_chat_list.class;
+                Fragment myFragment=null;
+                FragmentManager mFragment=getActivity().getSupportFragmentManager();
+                try {
+                    myFragment=(Fragment)fragmentClass.newInstance();
+                    myFragment.setArguments(bundle);
+                    mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
+                } catch (java.lang.InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
                 break;
             }
         }

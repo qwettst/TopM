@@ -36,6 +36,7 @@ import com.example.zz.zz.model.getAllReview.GetReview;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -232,7 +233,7 @@ public class allReview extends Fragment  implements View.OnClickListener{
             public void onFailure(Call<List<GetReview>> call, Throwable t) {
                 Log.d("Tag","failure " + t);
                 if(getContext()!=null)
-                    Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                    Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                 pbTask.setVisibility(View.GONE);
                 rvReviewView.setVisibility(View.VISIBLE);
             }

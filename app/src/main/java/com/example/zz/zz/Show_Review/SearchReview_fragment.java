@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -219,7 +220,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
             @Override
             public void onFailure(Call<List<GetReview>> call, Throwable t) {
                 Log.d("Tag","failure " + t);
-                Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                 pbTask.setVisibility(View.GONE);
                 rvReviewView.setVisibility(View.VISIBLE);
             }

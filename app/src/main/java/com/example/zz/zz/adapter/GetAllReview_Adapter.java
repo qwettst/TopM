@@ -129,7 +129,7 @@ public class GetAllReview_Adapter extends RecyclerView.Adapter<GetAllReview_Adap
         List<ReviewsParameter> reviewsParameterList=new ArrayList<>();
         reviewsParameterList.addAll(getReview.getReviewsParameters());
         if(reviewsParameterList.size()!=0)
-            rateReview=(reviewsParameterList.get(0).getValue()+reviewsParameterList.get(1).getValue()+reviewsParameterList.get(2).getValue())/3;
+            rateReview=(reviewsParameterList.get(0).getValue()+reviewsParameterList.get(1).getValue()+(5-reviewsParameterList.get(2).getValue()))/3;
 
         holder.rate.setRating(rateReview);
     }

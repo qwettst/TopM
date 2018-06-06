@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.dmoral.toasty.Toasty;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -163,7 +164,7 @@ public class edit_review extends Fragment implements DataSendFragment {
                             }
 
                             if (response.code()==200){
-                                Toast.makeText(getContext(),"Отзыв опубликован",Toast.LENGTH_LONG).show();
+                                Toasty.success(getContext(),"Отзыв опубликован",Toast.LENGTH_LONG).show();
                                 Log.d("TAG", "response " + response.body());
                                 Class fragmentClass;
                                 fragmentClass=myReview.class;
@@ -183,7 +184,7 @@ public class edit_review extends Fragment implements DataSendFragment {
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Log.d("Tag","failure " + t);
-                            Toast.makeText(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
+                            Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                         }
                     });
 
