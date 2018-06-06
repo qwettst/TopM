@@ -98,7 +98,7 @@ public class Create_LK extends Fragment {
 
             case R.id.action_lkcreate: {
 
-                if (etName.getText().length() != 0 && etInfo.getText().length() != 0 && etFirstname.getText().length() != 0 && etCity.getText().length() != 0 && etAdress.getText().length() != 0) {
+                if (etName.getText().length() != 0) {
                     SpecUser specUser=new SpecUser();
 
                     specUser.setName(etName.getText().toString());
@@ -144,21 +144,23 @@ public class Create_LK extends Fragment {
 
                     SaveSpecUser saveSpecUser = retrofit.create(SaveSpecUser.class);
 
-                    final Call<SpecUser> specU = saveSpecUser.saveSpecUser(jsonString);
+                    final Call<Void> specU = saveSpecUser.saveSpecUser(jsonString);
 
-                    specU.enqueue(new Callback<SpecUser>() {
+                    specU.enqueue(new Callback<Void>() {
                         @Override
-                        public void onResponse(Call<SpecUser> call, Response<SpecUser> response) {
+                        public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.isSuccessful()) {
                                 Log.d("TAG","response " + response.body());
 
                             } else {
                                 Log.d("TAG","response code " + response.code());
                             }
+                            if (response.code() == 200)
+                                Toasty.success(getContext(), "ЛК успешно создан", Toast.LENGTH_LONG).show();
                         }
 
                         @Override
-                        public void onFailure(Call<SpecUser> call, Throwable t) {
+                        public void onFailure(Call<Void> call, Throwable t) {
                             Log.d("Tag","failure " + t);
                             Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
                         }
@@ -172,6 +174,8 @@ public class Create_LK extends Fragment {
                     startActivity(intent);
 
                 }
+                else
+                    Toasty.info(getContext(), "Поле - Имя - не должно быть пустым", Toast.LENGTH_LONG).show();
                 break;
             }
         }

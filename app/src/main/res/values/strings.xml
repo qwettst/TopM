@@ -2,8 +2,8 @@
     <string name="app_name">ТОПмастер</string>
     <string name="serverIDTokenG">493075047380-q5ok7nlh81io2vfp22jprq9gsdrpjkqt.apps.googleusercontent.com</string>
     <string name="loading">loading..</string>
-    <string name="facebook_app_id">688418164882551</string>
-    <string name="fb_login_protocol_scheme">fb688418164882551</string>
+    <string name="facebook_app_id">245238852896792</string>
+    <string name="fb_login_protocol_scheme">fb245238852896792</string>
     <string name="openDrwm">Open</string>
     <string name="closeDrwm">Close</string>
     <string name="cancel">Отмена</string>

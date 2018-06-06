@@ -93,6 +93,7 @@ public class MainUser extends AppCompatActivity {
 
     private Button bSearch;
     private EditText etDatetime;
+    private int access=0;
 
 
 
@@ -425,6 +426,7 @@ public class MainUser extends AppCompatActivity {
                         {
                             nvDrawer.getMenu().clear();
                             nvDrawer.inflateMenu(R.menu.drawermenu_mod);
+                            access=1;
                         }
                         checkProfile(a);
                     } else {
@@ -483,6 +485,10 @@ public class MainUser extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<GetSpecUser> call, Throwable t) {
+                if(access!=1){
+                    nvDrawer.getMenu().clear();
+                    nvDrawer.inflateMenu(R.menu.drawermenu_without_lk);
+                }
                 Log.d("Tag","failure " + t);
             }
         });
@@ -502,6 +508,7 @@ public class MainUser extends AppCompatActivity {
                     UserProfile_DB uDb=db.getUserById(sIdU);
                     bundle.putString("mSign",sAuth);
                     bundle.putInt("uID", uDb.getIdU());
+                    bundle.putInt("uIDSpec",uDb.getIdU());
                 }catch (NullPointerException e) {
 
                 }

@@ -14,5 +14,5 @@ import retrofit2.http.Query;
 
 public interface SaveSpecUser {
     @POST("saveSpecUser")
-    Call<SpecUser> saveSpecUser(@Query("SpecUser") String str);
+    Call<Void> saveSpecUser(@Query("SpecUser") String str);
 }
