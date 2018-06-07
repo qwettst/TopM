@@ -112,6 +112,7 @@ public class user_chat_list extends Fragment {
 
         bundle = this.getArguments();
         getActivity().setTitle("Чаты");
+        getActivity().findViewById(R.id.search_form).setVisibility(View.GONE);
 
         ImageView ivBackground;
 
@@ -143,6 +144,7 @@ public class user_chat_list extends Fragment {
         UserProfile_DB uDB;
         db=new DatabaseUserProfileHelper(getContext());
         uDB=db.getUserById(bundle.getInt("uID"));
+        if(uDB!=null){
         myRef = FirebaseDatabase.getInstance().getReference().child("Users").child(uDB.getEmail()).child("ChatList");
 
         if (mChildEventListener == null) {
@@ -182,6 +184,7 @@ public class user_chat_list extends Fragment {
 
                 }
             };
+        }
 
             myRef.addChildEventListener(mChildEventListener);
 
@@ -203,6 +206,8 @@ public class user_chat_list extends Fragment {
         ChatUsers chatUsers=new ChatUsers("Общий чат","public_chat");
         ChatListInfo chatListInfo = new ChatListInfo(chatUsers);
         chatListInfoList.add(chatListInfo);
+        recyclerView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
         chatListAdapter.notifyDataSetChanged();
     }
 

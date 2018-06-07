@@ -62,7 +62,7 @@ public class ReviewInfo_LK_Adapter extends RecyclerView.Adapter<ReviewInfo_LK_Ad
             allReviewData.setSpec(getReview.getSpecName());
             allReviewData.setReviewsParameters(getReview.getReviewsParameters());
             allReviewData.setStatus(getReview.getStatus());
-            allReviewData.setIdSpecUser(getReview.getUser().getIdUser());
+            allReviewData.setIdSpecUser(getReview.getIdSpecUser());
 
             Class fragmentClass;
             fragmentClass=MainReview.class;

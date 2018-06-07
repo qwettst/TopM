@@ -57,9 +57,7 @@ import org.json.JSONObject;
 
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Locale;
 
 import es.dmoral.toasty.Toasty;
@@ -476,8 +474,13 @@ public class MainUser extends AppCompatActivity {
                     uDB=db.getUserById(response.body().getIdUser());
                     uDB.setUprofile(1);
                     db.updateUser(uDB,response.body().getIdUser());
-                    nvDrawer.getMenu().clear();
-                    nvDrawer.inflateMenu(R.menu.drawermenu);
+
+                    if(access!=1)
+                    {
+                        nvDrawer.getMenu().clear();
+                        nvDrawer.inflateMenu(R.menu.drawermenu);
+                    }
+
                 } else {
                     Log.d("TAG","response code " + response.code());
                 }

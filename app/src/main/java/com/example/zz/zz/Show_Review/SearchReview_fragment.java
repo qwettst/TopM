@@ -38,6 +38,7 @@ import com.example.zz.zz.model.AllReviewData;
 import com.example.zz.zz.model.ReviewData;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.GetReview;
+import com.example.zz.zz.model.getAllReview.ReviewsParameter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -103,13 +104,14 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
 
     private RecyclerView rvReviewView;
     private SearchGetAllReview_Adapter searchGetAllReview_adapter;
-    private List<GetReview> reviewInfo;
+    private List<GetReview> reviewInfoList;
     private ProgressBar pbTask;
     private CheckBox chY,chN;
     private Button bSearch;
     private Bundle bundle;
     private DataSendFragment dataFromActivityToFragment;
     private SearchReview srToAdapter;
+    private SearchReview searchReview = new SearchReview();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,7 +128,7 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         ivBackground=(ImageView) rootView.findViewById(R.id.background_image);
         ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
-        reviewInfo=new ArrayList<>();
+        reviewInfoList=new ArrayList<>();
 
         Glide
                 .with(this)
@@ -205,7 +207,32 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
             public void onResponse(Call<List<GetReview>> call, Response<List<GetReview>> response) {
                 if (response.isSuccessful()) {
                     Log.d("TAG","response " + response.body().size());
-                    reviewInfo.addAll(response.body());
+                    RatingBar rb=getActivity().findViewById(R.id.s_rate);
+                    EditText etName=getActivity().findViewById(R.id.s_name);
+                    EditText etSpec=getActivity().findViewById(R.id.s_spec);
+                    EditText etCity=getActivity().findViewById(R.id.s_city);
+                    EditText etAdress=getActivity().findViewById(R.id.s_street);
+                    EditText etDatetime=getActivity().findViewById(R.id.s_daterev);
+
+
+                    if(chY.isChecked())
+                        searchReview.setOnCall(1);
+                    else
+                    if(chN.isChecked())
+                        searchReview.setOnCall(0);
+                    else
+                        searchReview.setOnCall(3);
+
+                    searchReview.setName(etName.getText().toString());
+                    searchReview.setDatetime(etDatetime.getText().toString());
+                    searchReview.setCity(etCity.getText().toString());
+                    searchReview.setAdress(etAdress.getText().toString());
+                    searchReview.setRate(rb.getRating());
+                    searchReview.setSpec(etSpec.getText().toString());
+
+                    reviewInfoList.addAll(response.body());
+                    reviewInfoList=filterReview(reviewInfoList);
+                    reviewInfoList.size();
                     searchGetAllReview_adapter.notifyDataSetChanged();
 
                     pbTask.setVisibility(View.GONE);
@@ -258,30 +285,6 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.s_start:
-                final SearchReview searchReview = new SearchReview();
-
-                RatingBar rb=getActivity().findViewById(R.id.s_rate);
-                EditText etName=getActivity().findViewById(R.id.s_name);
-                EditText etSpec=getActivity().findViewById(R.id.s_spec);
-                EditText etCity=getActivity().findViewById(R.id.s_city);
-                EditText etAdress=getActivity().findViewById(R.id.s_street);
-                EditText etDatetime=getActivity().findViewById(R.id.s_daterev);
-
-
-                if(chY.isChecked())
-                    searchReview.setOnCall(1);
-                else
-                    if(chN.isChecked())
-                        searchReview.setOnCall(0);
-                    else
-                        searchReview.setOnCall(3);
-
-                searchReview.setName(etName.getText().toString());
-                searchReview.setDatetime(etDatetime.getText().toString());
-                searchReview.setCity(etCity.getText().toString());
-                searchReview.setAdress(etAdress.getText().toString());
-                searchReview.setRate(rb.getRating());
-                searchReview.setSpec(etSpec.getText().toString());
 
                 Class fragmentClass;
                 fragmentClass = SearchReview_fragment.class;
@@ -334,8 +337,65 @@ public class SearchReview_fragment extends Fragment  implements DataSendFragment
         FragmentManager fragmentManager = getFragmentManager();
         rvReviewView.setLayoutManager(mLayoutManager);
         rvReviewView.setItemAnimator(new DefaultItemAnimator());
-        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfo,srToAdapter,fragmentManager,bundle);
+        searchGetAllReview_adapter = new SearchGetAllReview_Adapter(reviewInfoList,srToAdapter,fragmentManager,bundle);
         rvReviewView.setAdapter(searchGetAllReview_adapter);
+    }
+
+    public List<GetReview>  filterReview(List<GetReview> reviewInfo) {
+        for (int position=0 ; position<reviewInfo.size(); position++) {
+            int fl = 0;
+            GetReview getReview = reviewInfo.get(position);
+
+            float rateReview = 0;
+            List<ReviewsParameter> reviewsParameterList = new ArrayList<>();
+            reviewsParameterList.addAll(getReview.getReviewsParameters());
+            if (reviewsParameterList.size() != 0)
+                rateReview = (reviewsParameterList.get(0).getValue() + reviewsParameterList.get(1).getValue() + (5 - reviewsParameterList.get(2).getValue())) / 3;
+
+            String s_name = getReview.getName() + " " + getReview.getSurname() + " " + getReview.getOtchestvo();
+
+
+            if (!s_name.toLowerCase().contains(searchReview.getName().toLowerCase()) && fl != 1) {
+                reviewInfo.remove(position);
+                position=-1;
+                fl=1;
+            }
+
+            if (!getReview.getCity().toLowerCase().contains(searchReview.getCity().toLowerCase()) && fl != 1) {
+                reviewInfo.remove(position);
+                position=-1;
+                fl=1;
+            }
+            if (!getReview.getAddress().toLowerCase().contains(searchReview.getAdress().toLowerCase()) && fl != 1) {
+                reviewInfo.remove(position);
+                position=-1;
+                fl=1;
+            }
+            if (!getReview.getSpecName().toLowerCase().contains(searchReview.getSpec().toLowerCase()) && fl != 1) {
+                reviewInfo.remove(position);
+                position=-1;
+                fl=1;
+            }
+            if (searchReview.getOnCall() != getReview.getOnCall() && fl != 1)
+                if (searchReview.getOnCall() != 3 && fl != 1) {
+                    reviewInfo.remove(position);
+                    position=-1;
+                    fl=1;
+                }
+
+            if (rateReview + 0.5 <= searchReview.getRate() && fl != 1) {
+                reviewInfo.remove(position);
+                position=-1;
+                fl=1;
+            }
+            if (!getReview.getDatetime().contains(searchReview.getDatetime()) & fl != 1) {
+                reviewInfo.remove(position);
+                position=-1;
+                fl=1;
+            }
+
+        }
+        return reviewInfo;
     }
 
 

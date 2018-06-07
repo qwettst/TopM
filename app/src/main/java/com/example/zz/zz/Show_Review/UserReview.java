@@ -142,6 +142,7 @@ public class UserReview extends Fragment implements View.OnClickListener{
         pbTask=(ProgressBar)rootView.findViewById(R.id.progress);
 
         bundle = this.getArguments();
+        bundle.putInt("UserReviewL",1);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         FragmentManager fragmentManager = getFragmentManager();

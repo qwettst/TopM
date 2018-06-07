@@ -21,10 +21,13 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.BuildConfig;
+import com.example.zz.zz.CheckModGetter;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.PublishReview;
 import com.example.zz.zz.R;
+import com.example.zz.zz.UpdateReview;
 import com.example.zz.zz.model.AllReviewData;
+import com.example.zz.zz.model.CheckMod;
 import com.example.zz.zz.model.ReviewData;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
@@ -102,7 +105,6 @@ public class edit_review extends Fragment implements DataSendFragment {
         switch (item.getItemId()) {
 
             case R.id.action_send: {
-                SaveModReview svReview=new SaveModReview();
 
                     User u=new User();
                     u.setIdUser(ardMod.getUser().getIdUser());
@@ -122,71 +124,10 @@ public class edit_review extends Fragment implements DataSendFragment {
                     else
                         svReview.setOnCall(0);
 
-                    HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-
-                    if(BuildConfig.DEBUG){
-                        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
-                    }
-
-                    OkHttpClient okClient = new OkHttpClient.Builder()
-                            .addInterceptor(loggingInterceptor)
-                            .build();
-
-                    Retrofit rftiReview = new Retrofit.Builder()
-                            .baseUrl("http://94.251.14.36:8080/TopMaster/")
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .client(okClient)
-                            .build();
-
-                    PublishReview publishReview = rftiReview.create(PublishReview.class);
-
-
-                    ObjectMapper mapper = new ObjectMapper();
-                    String jsonString = null;
-                    try {
-                        jsonString = mapper.writeValueAsString(svReview);
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("json " + jsonString);
 
 
 
-                    final Call<Void> call = publishReview.publishreview(jsonString);
 
-
-                    call.enqueue(new Callback<Void>() {
-                        @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {
-                            if (response.isSuccessful()) {
-                            } else {
-                                Log.d("TAG", "response code " + response.code());
-                            }
-
-                            if (response.code()==200){
-                                Toasty.success(getContext(),"Отзыв опубликован",Toast.LENGTH_LONG).show();
-                                Log.d("TAG", "response " + response.body());
-                                Class fragmentClass;
-                                fragmentClass=myReview.class;
-                                try {
-                                    Fragment myFragment=(Fragment)fragmentClass.newInstance();
-                                    myFragment.setArguments(bundle);
-                                    FragmentManager fragmentManager = getFragmentManager();
-                                    View view = getActivity().getCurrentFocus();
-                                    fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
-                                } catch (java.lang.InstantiationException e) {
-                                    e.printStackTrace();
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable t) {
-                            Log.d("Tag","failure " + t);
-                            Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
-                        }
-                    });
 
                 break;
             }
@@ -199,6 +140,7 @@ public class edit_review extends Fragment implements DataSendFragment {
     private CheckBox chOnCallYes,chOnCallNo;
     private AllReviewData ardMod;
     private Bundle bundle;
+    private SaveModReview svReview=new SaveModReview();
 
 
     @Override
@@ -317,6 +259,143 @@ public class edit_review extends Fragment implements DataSendFragment {
         }
 
     }
+
+    private void publishModReview(){
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
+        Retrofit rftiReview = new Retrofit.Builder()
+                .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okClient)
+                .build();
+
+        PublishReview publishReview = rftiReview.create(PublishReview.class);
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = mapper.writeValueAsString(svReview);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println("json " + jsonString);
+
+
+
+        final Call<Void> call = publishReview.publishreview(jsonString);
+
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                } else {
+                    Log.d("TAG", "response code " + response.code());
+                }
+
+                if (response.code()==200){
+                    Toasty.success(getContext(),"Отзыв опубликован",Toast.LENGTH_LONG).show();
+                    Log.d("TAG", "response " + response.body());
+                    Class fragmentClass;
+                    fragmentClass=myReview.class;
+                    try {
+                        Fragment myFragment=(Fragment)fragmentClass.newInstance();
+                        myFragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        View view = getActivity().getCurrentFocus();
+                        fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("Tag","failure " + t);
+                Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
+            }
+        });
+    }
+
+    private void updateReview(){
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
+        }
+
+        OkHttpClient okClient = new OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build();
+
+        Retrofit rftiReview = new Retrofit.Builder()
+                .baseUrl("http://94.251.14.36:8080/TopMaster/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okClient)
+                .build();
+
+        UpdateReview updateReview = rftiReview.create(UpdateReview.class);
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+        try {
+            jsonString = mapper.writeValueAsString(svReview);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        System.out.println("json " + jsonString);
+
+
+
+        final Call<Void> call = updateReview.updateReview(jsonString);
+
+
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                } else {
+                    Log.d("TAG", "response code " + response.code());
+                }
+
+                if (response.code()==200){
+                    Toasty.success(getContext(),"Отзыв изменен",Toast.LENGTH_LONG).show();
+                    Log.d("TAG", "response " + response.body());
+                    Class fragmentClass;
+                    fragmentClass=UserReview.class;
+                    try {
+                        Fragment myFragment=(Fragment)fragmentClass.newInstance();
+                        myFragment.setArguments(bundle);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        View view = getActivity().getCurrentFocus();
+                        fragmentManager.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.d("Tag","failure " + t);
+                Toasty.error(getContext(), "Сервер не отвечает", Toast.LENGTH_SHORT, true).show();
+            }
+        });
+    }
+
 
 
 

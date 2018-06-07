@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.zz.zz.AddReviewToLK;
 import com.example.zz.zz.BuildConfig;
+import com.example.zz.zz.CheckModGetter;
 import com.example.zz.zz.DataSendFragment;
 import com.example.zz.zz.LK_User.LK;
 import com.example.zz.zz.LoginUser;
@@ -28,6 +29,7 @@ import com.example.zz.zz.R;
 import com.example.zz.zz.ReviewDelete;
 import com.example.zz.zz.model.AddSpecUserReview;
 import com.example.zz.zz.model.AllReviewData;
+import com.example.zz.zz.model.CheckMod;
 import com.example.zz.zz.model.SearchReview;
 import com.example.zz.zz.model.getAllReview.ReviewsParameter;
 import com.example.zz.zz.model.getAllReview.User;
@@ -90,15 +92,19 @@ public class MainReview extends Fragment implements DataSendFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         if(ardMod!=null) {
-            if (ardMod.getStatus() == 0)
+            if (ardMod.getStatus() == 0 && bundle.getInt("UserReviewL")!=1)
                 inflater.inflate(R.menu.toolbar_menu_review_settings, menu);
-            else
-                if(bundle.getInt("uID")!=-1) {
-                    if (ardMod.getIdSpecUser() != null)
-                        inflater.inflate(R.menu.toolbar_menu_review_user_withspec, menu);
-                    else
-                        inflater.inflate(R.menu.toolbar_menu_review_user_nonspec, menu);
-                }
+            else {
+                if (ardMod.getStatus() == 0 && bundle.getInt("UserReviewL")==1)
+                    inflater.inflate(R.menu.toolbar_menu_review_settings_for_user, menu);
+                else
+                    if (bundle.getInt("uID") != -1) {
+                        if (ardMod.getIdSpecUser() != null)
+                            inflater.inflate(R.menu.toolbar_menu_review_user_withspec, menu);
+                        else
+                            inflater.inflate(R.menu.toolbar_menu_review_user_nonspec, menu);
+                    }
+            }
         }
         else
             if(bundle.getInt("uID")!=-1)
@@ -378,7 +384,7 @@ public class MainReview extends Fragment implements DataSendFragment {
         bSReview.putInt("uID", bundle.getInt("uID"));
 
         Class fragmentClass;
-        fragmentClass=myReview.class;
+        fragmentClass=allReview.class;
         try {
             Fragment myFragment=(Fragment)fragmentClass.newInstance();
             FragmentManager fragmentManager = getFragmentManager();
@@ -393,6 +399,7 @@ public class MainReview extends Fragment implements DataSendFragment {
     }
 
 
+
     @Override
     public void sendSearchData(SearchReview data) {
 
@@ -404,62 +411,7 @@ public class MainReview extends Fragment implements DataSendFragment {
 
     }
 
-    private void checkMod(){
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
 
-        if(BuildConfig.DEBUG){
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY );
-        }
-
-        OkHttpClient okClient = new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
-
-        Retrofit rftiUser = new Retrofit.Builder()
-                .baseUrl("http://94.251.14.36:8080/TopMaster/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okClient)
-                .build();
-
-        User uLogin=new User();
-
-
-        LoginUser loginUser = rftiUser.create(LoginUser.class);
-
-
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = null;
-        try {
-            jsonString = mapper.writeValueAsString(uLogin);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        System.out.println("json " + jsonString);
-
-
-
-        final Call<User> call = loginUser.createUser(jsonString);
-
-
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                if (response.isSuccessful()) {
-                    if(response.body().getAccess().getIdAccess()==3){
-
-                    }
-
-                } else {
-                    Log.d("TAG","response code " + response.code());
-                }
-            }
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.d("Tag","failure " + t);
-                Toasty.error(getContext(),"Сервер не отвечает",Toast.LENGTH_LONG).show();
-            }
-        });
-    }
 
 
     /**

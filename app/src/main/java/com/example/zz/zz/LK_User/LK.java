@@ -195,6 +195,7 @@ public class LK extends Fragment {
                     tvAb.setText(response.body().getInfo());
                     tvAdress.setText(response.body().getAddress());
                     tvCity.setText(response.body().getCity());
+
                     getReviewList.addAll(response.body().getReviews());
                     suIDSpec=response.body().getEmail();
 
@@ -226,37 +227,39 @@ public class LK extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.lk_sendMes:
-            {
+            case R.id.lk_sendMes: {
                 UserProfile_DB uDB;
-                db=new DatabaseUserProfileHelper(getContext());
-                uDB=db.getUserById(bundle.getInt("uID"));
-                bundle.putString("childArg",sNameSpec);
-                ChatUsers chatUsers = new ChatUsers();
-                chatUsers.setChatName(sNameSpec);
-                chatUsers.setChatID(suIDSpec);
-                myRef = FirebaseDatabase.getInstance().getReference();
-                myRef.child("Users").child(uDB.getEmail()).child("ChatList").child("OpenChats").push().
-                        setValue(chatUsers);
+                db = new DatabaseUserProfileHelper(getContext());
+                uDB = db.getUserById(bundle.getInt("uID"));
 
-                chatUsers.setChatName(uDB.getFirstname()+" "+uDB.getLastname());
-                chatUsers.setChatID(uDB.getEmail());
-                myRef.child("Users").child(suIDSpec).child("ChatList").child("OpenChats").push().
-                        setValue(chatUsers);
-                Class fragmentClass;
-                fragmentClass=user_chat_list.class;
-                Fragment myFragment=null;
-                FragmentManager mFragment=getActivity().getSupportFragmentManager();
-                try {
-                    myFragment=(Fragment)fragmentClass.newInstance();
-                    myFragment.setArguments(bundle);
-                    mFragment.beginTransaction().replace(R.id.flcontent,myFragment).commit();
-                } catch (java.lang.InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                if (!uDB.getEmail().equals(suIDSpec)) {
+                    bundle.putString("childArg", sNameSpec);
+                    ChatUsers chatUsers = new ChatUsers();
+                    chatUsers.setChatName(sNameSpec);
+                    chatUsers.setChatID(suIDSpec);
+                    myRef = FirebaseDatabase.getInstance().getReference();
+                    myRef.child("Users").child(uDB.getEmail()).child("ChatList").child("OpenChats").push().
+                            setValue(chatUsers);
+
+                    chatUsers.setChatName(uDB.getFirstname() + " " + uDB.getLastname());
+                    chatUsers.setChatID(uDB.getEmail());
+                    myRef.child("Users").child(suIDSpec).child("ChatList").child("OpenChats").push().
+                            setValue(chatUsers);
+                    Class fragmentClass;
+                    fragmentClass = user_chat_list.class;
+                    Fragment myFragment = null;
+                    FragmentManager mFragment = getActivity().getSupportFragmentManager();
+                    try {
+                        myFragment = (Fragment) fragmentClass.newInstance();
+                        myFragment.setArguments(bundle);
+                        mFragment.beginTransaction().replace(R.id.flcontent, myFragment).commit();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    break;
                 }
-                break;
             }
         }
         return super.onOptionsItemSelected(item);

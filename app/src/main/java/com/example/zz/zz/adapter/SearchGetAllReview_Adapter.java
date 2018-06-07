@@ -137,61 +137,11 @@ public class SearchGetAllReview_Adapter  extends RecyclerView.Adapter<SearchGetA
         holder.street.setText(getReview.getAddress());
         holder.date.setText(getReview.getDatetime());
         holder.rate.setRating(rateReview);
-        if(!s_name.toLowerCase().contains(searchReview.getName().toLowerCase()) && fl!=1) {
-            removeItem(position - i_posremove);
-            fl = 1;
-            i_posremove++;}
 
-        if (!getReview.getCity().toLowerCase().contains(searchReview.getCity().toLowerCase())&& fl!=1) {
-            removeItem(position - i_posremove);
-            fl = 1;
-            i_posremove++;
-        }
-        if (!getReview.getAddress().toLowerCase().contains(searchReview.getAdress().toLowerCase())&& fl!=1) {
-            removeItem(position - i_posremove);
-            fl = 1;
-            i_posremove++;
-        }
-        if (!getReview.getSpecName().toLowerCase().contains(searchReview.getSpec().toLowerCase())&& fl!=1) {
-            removeItem(position - i_posremove);
-            fl = 1;
-            i_posremove++;
-        }
-        if(searchReview.getOnCall()!=getReview.getOnCall() && fl!=1)
-            if(searchReview.getOnCall()!=3 && fl!=1)
-            {
-                removeItem(position - i_posremove);
-                fl = 1;
-                i_posremove++;
-            }
-
-        if(rateReview < searchReview.getRate() && fl!=1) {
-            removeItem(position - i_posremove);
-            fl = 1;
-            i_posremove++;
-        }
-        if(!getReview.getDatetime().contains(searchReview.getDatetime()) & fl!=1) {
-            removeItem(position - i_posremove);
-            fl = 1;
-            i_posremove++;
-        }
-    
     }
 
 
 
-    public void removeItem(final int position) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                if(position>=0) {
-                    getReviewList.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, getItemCount());
-                }
-            }
-        });
-    }
 
     @Override
     public int getItemCount() {
