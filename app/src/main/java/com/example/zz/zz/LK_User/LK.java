@@ -238,12 +238,12 @@ public class LK extends Fragment {
                     chatUsers.setChatName(sNameSpec);
                     chatUsers.setChatID(suIDSpec);
                     myRef = FirebaseDatabase.getInstance().getReference();
-                    myRef.child("Users").child(uDB.getEmail()).child("ChatList").child("OpenChats").push().
+                    myRef.child("Users").child(uDB.getEmail()).child("ChatList").child("OpenChats").child(suIDSpec).
                             setValue(chatUsers);
 
                     chatUsers.setChatName(uDB.getFirstname() + " " + uDB.getLastname());
                     chatUsers.setChatID(uDB.getEmail());
-                    myRef.child("Users").child(suIDSpec).child("ChatList").child("OpenChats").push().
+                    myRef.child("Users").child(suIDSpec).child("ChatList").child("OpenChats").child(uDB.getEmail()).
                             setValue(chatUsers);
                     Class fragmentClass;
                     fragmentClass = user_chat_list.class;
